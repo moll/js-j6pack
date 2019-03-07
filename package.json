@@ -1,0 +1,37 @@
+{
+	"name": "j6pack",
+	"version": "0.0.0",
+	"description": "",
+	"keywords": [],
+	"homepage": "https://github.com/moll/js-j6pack",
+	"bugs": "https://github.com/moll/js-j6pack/issues",
+
+	"author": {
+		"name": "Andri Möll",
+		"email": "andri@dot.ee",
+		"url": "http://themoll.com"
+	},
+
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/moll/js-j6pack.git"
+	},
+
+	"licenses": [{
+		"type": "LAGPL",
+		"url": "https://github.com/moll/js-j6pack/blob/master/LICENSE"
+	}],
+
+	"main": "index.js",
+	"scripts": {"test": "make test"},
+
+	"dependencies": {
+		"jsx-transform": ">= 2.3.0 < 3",
+		"void-elements": ">= 2 < 4"
+	},
+
+	"devDependencies": {
+		"mocha": ">= 2 < 3",
+		"must": ">= 0.13.0 < 0.14"
+	}
+}
