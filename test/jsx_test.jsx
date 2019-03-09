@@ -1,5 +1,6 @@
 /** @jsx Jsx */
 var Jsx = require("..")
+var Fragment = Jsx.Fragment
 var Html = Jsx.Html
 var outdent = require("./outdent")
 var demand = require("must")
@@ -218,6 +219,20 @@ describe("Jsx", function() {
 
 				<Nullable />.must.eql(new Html("<span>:(</span>"))
 			})
+		})
+	})
+
+	describe(".Fragment", function() {
+		it("must return an array of children HTML", function() {
+			var html = <Fragment>
+				<p>Hello, World!</p>
+				<p>What's up?</p>
+			</Fragment>
+
+			html.must.eql([
+				new Html("<p>Hello, World!</p>"),
+				new Html("<p>What's up?</p>")
+			])
 		})
 	})
 })

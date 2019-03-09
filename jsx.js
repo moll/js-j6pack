@@ -3,8 +3,9 @@ var VOID_ELEMENTS = require("void-elements")
 var VOID_ERR = "Children given to self-closing element: "
 var EMPTY_ARR = Array.prototype
 exports = module.exports = jsx
-exports.html = newHtml
+exports.Fragment = Fragment
 exports.Html = Html
+exports.html = newHtml
 
 function jsx(tagName, attrs, children) {
 	switch (typeof tagName) {
@@ -77,6 +78,8 @@ function escapeHtml(text) {
 function typeOf(value) {
 	return value === null ? "null" : isArray(value) ? "array" : typeof value
 }
+
+function Fragment(_attrs, children) { return children }
 
 function Html(html) { this.value = html }
 Html.prototype.valueOf = function() { return this.value }
