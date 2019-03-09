@@ -23,11 +23,13 @@
 	}],
 
 	"main": "index.js",
+	"bin": {"j6pack": "./bin/j6pack"},
 	"scripts": {"test": "make test"},
 
 	"dependencies": {
 		"jsx-transform": ">= 2.3.0 < 3",
-		"void-elements": ">= 2 < 4"
+		"void-elements": ">= 2 < 4",
+		"concat-stream": "^1.4.0"
 	},
 
 	"devDependencies": {
