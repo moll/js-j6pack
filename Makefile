@@ -18,6 +18,9 @@ autotest:
 autospec:
 	@$(NODE) $(NODE_OPTS) $(MOCHA) -R spec --watch $(TEST)
 
+examples/%.jsx: .FORCE
+	@$(NODE) --require ./register "$@"
+
 pack:
 	@file=$$(npm pack); echo "$$file"; tar tf "$$file"
 
@@ -35,3 +38,5 @@ clean:
 .PHONY: test spec autotest autospec
 .PHONY: pack publish tag
 .PHONY: clean
+.PHONY: .FORCE
+.PRECIOUS: examples/%.jsx
