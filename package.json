@@ -1,8 +1,8 @@
 {
 	"name": "j6pack",
 	"version": "0.0.0",
-	"description": "",
-	"keywords": [],
+	"description": "Render JSX to HTML. Works also with Express.js. Minimal with no React dependency.",
+	"keywords": ["jsx", "express", "react"],
 	"homepage": "https://github.com/moll/js-j6pack",
 	"bugs": "https://github.com/moll/js-j6pack/issues",
 
