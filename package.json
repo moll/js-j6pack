@@ -22,7 +22,7 @@
 		"url": "https://github.com/moll/js-j6pack/blob/master/LICENSE"
 	}],
 
-	"main": "index.js",
+	"main": "jsx.js",
 	"bin": {"j6pack": "./bin/j6pack"},
 	"scripts": {"test": "make test"},
 
