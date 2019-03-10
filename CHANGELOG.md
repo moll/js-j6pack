@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.338 (Mar 10, 2019)
 - Permit interpolating `undefined` values.
   That'd be `<p>Hello, {undefined}!</p>`.
 - Permit interpolating objects.
