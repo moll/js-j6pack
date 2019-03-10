@@ -35,6 +35,10 @@ describe("Jsx", function() {
 		})
 
 		describe("given a plain tag", function() {
+			it("must not self-close a non-self-closing tag", function() {
+				<script />.must.eql(new Html("<script></script>"))
+			})
+
 			it("must render tag with text child", function() {
 				<p>Hello, World</p>.must.eql(new Html("<p>Hello, World</p>"))
 			})
@@ -47,6 +51,55 @@ describe("Jsx", function() {
 			it("must render tag with array children", function() {
 				var html = <p>Hello, {[<span>World</span>, "!"]}</p>
 				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
+			})
+
+			it("must render tag with undefined child", function() {
+				var html = <p>Hello, {undefined}!</p>
+				html.must.eql(new Html("<p>Hello, !</p>"))
+			})
+
+			it("must render tag with null child", function() {
+				var html = <p>Hello, {null}!</p>
+				html.must.eql(new Html("<p>Hello, !</p>"))
+			})
+
+			it("must render tag with number child", function() {
+				var html = <p>Hello, {42}!</p>
+				html.must.eql(new Html("<p>Hello, 42!</p>"))
+			})
+
+			it("must escape interpolated string child", function() {
+				var xss = "<script>alert(1&2)</script>"
+				var html = <p>Hello, {xss}!</p>
+				html.must.eql(new Html(outdent`
+					<p>Hello, &lt;script&gt;alert(1&amp;2)&lt;/script&gt;!</p>
+				`))
+			})
+
+			it("must not escape interpolated quotes in string child", function() {
+				var name = "John \"Doe\" Smith's Car"
+				var html = <p>Hello, {name}!</p>
+				html.must.eql(new Html(`<p>Hello, John "Doe" Smith's Car!</p>`))
+			})
+
+			it("must render interpolated object", function() {
+				var date = new Date(2015, 5, 18)
+				var html = <p>Hello, {date}!</p>
+				html.must.eql(new Html("<p>Hello, " + date.toString() + "!</p>"))
+			})
+
+			it("must escape interpolated object", function() {
+				var xss = {toString: () => "<script>alert(1&2)</script>"}
+				var html = <p>Hello, {xss}!</p>
+
+				html.must.eql(new Html(outdent`
+					<p>Hello, &lt;script&gt;alert(1&amp;2)&lt;/script&gt;!</p>
+				`))
+			})
+
+			it("must not escape interpolated Html", function() {
+				var html = <p>Hello, {new Html("<span>world</span>")}!</p>
+				html.must.eql(new Html("<p>Hello, <span>world</span>!</p>"))
 			})
 
 			it("must render tag with attribute", function() {
@@ -113,30 +166,20 @@ describe("Jsx", function() {
 				html.must.eql(new Html(`<p class="greeting">Hello, World!</p>`))
 			})
 
+			it("must escape object attribute", function() {
+				var xss = {toString: () => "<script>alert(1&2)</script>"}
+				var html = <p class={xss}>Hello, world!</p>
+
+				html.must.eql(new Html(outdent`
+					<p class="<script>alert(1&2)</script>">Hello, world!</p>
+				`))
+			})
+
 			it("must render self-closing tag with attributes", function() {
 				var html = <input name="greeting" value="Hello, World!" />
 				html.must.eql(new Html(outdent`
 					<input name="greeting" value="Hello, World!" />
 				`))
-			})
-
-			it("must not self-close a non-self-closing tag", function() {
-				<script />.must.eql(new Html("<script></script>"))
-			})
-
-			it("must escape interpolated text", function() {
-				var xss = "<script>alert(1&2)</script>"
-				var html = <p>Hello, {xss}!</p>
-				html.must.eql(new Html(outdent`
-					<p>Hello, &lt;script&gt;alert(1&amp;2)&lt;/script&gt;!</p>
-				`))
-			})
-
-			it("must not escape interpolated single or double quotes in text",
-				function() {
-				var name = "John \"Doe\" Smith's Car"
-				var html = <p>Hello, {name}!</p>
-				html.must.eql(new Html(`<p>Hello, John "Doe" Smith's Car!</p>`))
 			})
 
 			it("must escape double quotes in interpolated attributes", function() {

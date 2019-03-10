@@ -38,14 +38,15 @@ function renderChild(children, child) {
 }
 
 function renderNode(value) {
-	switch (value === null ? "null" : typeof value) {
+	switch (typeOf(value)) {
+		case "undefined":
 		case "null": return ""
 		case "number": return value
 		case "string": return escapeHtml(value)
 
 		case "object":
 			if (value instanceof Html) return String(value)
-			// Fall through.
+			return escapeHtml(String(value))
 
 		default: throw new TypeError("Invalid Element: " + value)
 	}
