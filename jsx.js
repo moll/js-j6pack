@@ -48,7 +48,7 @@ function renderNode(value) {
 			if (value instanceof Html) return String(value)
 			return escapeHtml(String(value))
 
-		default: throw new TypeError("Invalid Element: " + value)
+		default: throw new TypeError("Invalid element: " + value)
 	}
 }
 
