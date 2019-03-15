@@ -392,12 +392,12 @@ describe("Jsx", function() {
 					Glad to have you.
 				</Paragraph>
 
-					html.must.eql(new Html(`<p>
-						<span id="greeting">Hello, World!</span>
-						<br />
-						Glad to have you.
-						</p>
-					`.replace(/\s*\n\s*/g, "")))
+				html.must.eql(new Html(`<p>
+					<span id="greeting">Hello, World!</span>
+					<br />
+					Glad to have you.
+					</p>
+				`.replace(/\s*\n\s*/g, "")))
 			})
 
 			it("must call with null given no attributes but children", function() {
