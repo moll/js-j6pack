@@ -1,3 +1,6 @@
+## Unreleased
+- Fixes escaping uppercase variations of `</script` in `<script>` tags.
+
 ## 0.2.0 (Mar 15, 2019)
 - Alters `<script>`s children escaping.  
   Escapes only `</script` via `<\/script`. If that's not a desirable syntax (for example, when you're not using JavaScript in `<script>`), use `Jsx.html` and perform your own escaping.

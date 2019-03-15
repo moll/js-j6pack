@@ -268,6 +268,14 @@ describe("Jsx", function() {
 					`))
 				})
 
+				it("must escape </ScripT in string children", function() {
+					var html = <script>{`if (0 < 1) alert("</ScripT")`}</script>
+
+					html.must.eql(new Html(outdent`
+						<script>if (0 < 1) alert("<\\/ScripT")</script>
+					`))
+				})
+
 				it("must escape </script> in string children", function() {
 					// http://handlebarsjs.com/
 					var html = <script>{`if (0 < 1) alert("</script>")`}</script>

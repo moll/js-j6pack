@@ -100,6 +100,11 @@ function escapeHtml(text) {
 	return text
 }
 
+// https://www.w3.org/TR/html52/semantics-scripting.html#restrictions-for-contents-of-script-elements
+function escapeScript(text) {
+	return text.replace(/<\/(script)/gi, "<\\/$1")
+}
+
 function typeOf(value) {
 	return value === null ? "null" : isArray(value) ? "array" : typeof value
 }
@@ -111,6 +116,5 @@ Html.prototype.valueOf = function() { return this.value }
 Html.prototype.toString = Html.prototype.valueOf
 
 function escapeAttr(attr) { return attr.replace(/"/g, "&quot;") }
-function escapeScript(text) { return text.replace(/<\/script/g, "<\\/script") }
 function isEmpty(obj) { for (var _key in obj) return false; return true }
 function newHtml(html) { return new Html(html) }
