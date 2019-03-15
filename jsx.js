@@ -93,7 +93,6 @@ function renderAttrs(attrs) {
 	return html.join(" ")
 }
 
-
 function escapeHtml(text) {
 	text = text.replace(/&/g, "&amp;")
 	text = text.replace(/</g, "&lt;")
