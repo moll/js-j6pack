@@ -230,7 +230,7 @@ describe("Jsx", function() {
 					html.must.eql(new Html(`<script>alert("Hello, !")</script>`))
 				})
 
-				it("must render tag with null child", function() {
+				it("must render tag with boolean child", function() {
 					var html = <script>alert("Hello, {true}!")</script>
 					html.must.eql(new Html(`<script>alert("Hello, true!")</script>`))
 				})
