@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.1 (Mar 15, 2019)
 - Fixes escaping uppercase variations of `</script` in `<script>` tags.
 - Escapes comments (`<!--`) in `<script>` tags.
 
