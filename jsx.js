@@ -24,7 +24,8 @@ function render(tagName, attrs, children) {
 		html += " />"
 	}
 	else {
-		children = children == null ? EMPTY_ARR : children.reduce(renderChild, [])
+		var renderTagChild = tagName == "script" ? renderScriptChild : renderChild
+		children = (children || EMPTY_ARR).reduce(renderTagChild, [])
 		html += ">" + children.join("") + "</" + tagName + ">"
 	}
 
@@ -33,23 +34,45 @@ function render(tagName, attrs, children) {
 }
 
 function renderChild(children, child) {
-	if (isArray(child)) return child.reduce(renderChild, children)
-	else return children.push(renderNode(child)), children
-}
-
-function renderNode(value) {
-	switch (typeOf(value)) {
+	switch (typeOf(child)) {
 		case "undefined":
-		case "null": return ""
-		case "number": return value
-		case "string": return escapeHtml(value)
+		case "null": break
+		case "number": children.push(child); break
+		case "string": children.push(escapeHtml(child)); break
+		case "array": return child.reduce(renderChild, children)
 
 		case "object":
-			if (value instanceof Html) return String(value)
-			return escapeHtml(String(value))
+			if (child instanceof Html) children.push(String(child))
+			else children.push(escapeHtml(String(child)))
+			break
 
-		default: throw new TypeError("Invalid element: " + value)
+		default: throw new TypeError("Invalid element: " + child)
 	}
+
+	return children
+}
+
+function renderScriptChild(children, child) {
+	switch (typeOf(child)) {
+		case "undefined":
+		case "null": break
+		case "number": children.push(child); break
+		case "string": children.push(escapeScript(child)); break
+		case "array": return child.reduce(renderScriptChild, children)
+
+		case "object":
+			// NOTE: This doesn't escape </script> in nested tags (which get rendered
+			// to Html instances by the Jsx function) to permit using Jsx.html for
+			// manually escaping </script>. The default <\script> escape may not be
+			// desirable for all embedded languages in <script> tags.
+			if (child instanceof Html) children.push(String(child))
+			else children.push(escapeScript(String(child)))
+			break
+
+		default: throw new TypeError("Invalid element: " + child)
+	}
+
+	return children
 }
 
 function renderAttrs(attrs) {
@@ -87,5 +110,6 @@ Html.prototype.valueOf = function() { return this.value }
 Html.prototype.toString = Html.prototype.valueOf
 
 function escapeAttr(attr) { return attr.replace(/"/g, "&quot;") }
+function escapeScript(text) { return text.replace(/<\/script/g, "<\\/script") }
 function isEmpty(obj) { for (var _key in obj) return false; return true }
 function newHtml(html) { return new Html(html) }

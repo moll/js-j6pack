@@ -39,20 +39,6 @@ describe("Jsx", function() {
 				<script />.must.eql(new Html("<script></script>"))
 			})
 
-			it("must render tag with text child", function() {
-				<p>Hello, World</p>.must.eql(new Html("<p>Hello, World</p>"))
-			})
-
-			it("must render tag with text and element children", function() {
-				var html = <p>Hello, <span>World</span>!</p>
-				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
-			})
-
-			it("must render tag with array children", function() {
-				var html = <p>Hello, {[<span>World</span>, "!"]}</p>
-				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
-			})
-
 			it("must render tag with undefined child", function() {
 				var html = <p>Hello, {undefined}!</p>
 				html.must.eql(new Html("<p>Hello, !</p>"))
@@ -68,7 +54,11 @@ describe("Jsx", function() {
 				html.must.eql(new Html("<p>Hello, 42!</p>"))
 			})
 
-			it("must escape interpolated string child", function() {
+			it("must render tag with string child", function() {
+				<p>Hello, World</p>.must.eql(new Html("<p>Hello, World</p>"))
+			})
+
+			it("must escape string child", function() {
 				var xss = "<script>alert(1&2)</script>"
 				var html = <p>Hello, {xss}!</p>
 				html.must.eql(new Html(outdent`
@@ -76,19 +66,34 @@ describe("Jsx", function() {
 				`))
 			})
 
-			it("must not escape interpolated quotes in string child", function() {
+			it("must not escape quotes in string child", function() {
 				var name = "John \"Doe\" Smith's Car"
 				var html = <p>Hello, {name}!</p>
 				html.must.eql(new Html(`<p>Hello, John "Doe" Smith's Car!</p>`))
 			})
 
-			it("must render interpolated object", function() {
+			it("must render tag with string and element children", function() {
+				var html = <p>Hello, <span>World</span>!</p>
+				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
+			})
+
+			it("must render tag with array children", function() {
+				var html = <p>Hello, {[<span>World</span>, "!"]}</p>
+				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
+			})
+
+			it("must escape array string children", function() {
+				var html = <p>Hello, {["Rock & Roll"]}!</p>
+				html.must.eql(new Html("<p>Hello, Rock &amp; Roll!</p>"))
+			})
+
+			it("must render object", function() {
 				var date = new Date(2015, 5, 18)
 				var html = <p>Hello, {date}!</p>
 				html.must.eql(new Html("<p>Hello, " + date.toString() + "!</p>"))
 			})
 
-			it("must escape interpolated object", function() {
+			it("must escape object", function() {
 				var xss = {toString: () => "<script>alert(1&2)</script>"}
 				var html = <p>Hello, {xss}!</p>
 
@@ -97,113 +102,240 @@ describe("Jsx", function() {
 				`))
 			})
 
-			it("must not escape interpolated Html", function() {
+			it("must not escape Html", function() {
 				var html = <p>Hello, {new Html("<span>world</span>")}!</p>
 				html.must.eql(new Html("<p>Hello, <span>world</span>!</p>"))
 			})
 
-			it("must render tag with attribute", function() {
-				var html = <p class="text">Hello, World!</p>
-				html.must.eql(new Html("<p class=\"text\">Hello, World!</p>"))
+			describe("given attributes", function() {
+				it("must render tag with attribute", function() {
+					var html = <p class="text">Hello, World!</p>
+					html.must.eql(new Html("<p class=\"text\">Hello, World!</p>"))
+				})
+
+				it("must render tag with attributes", function() {
+					var html = <p id="greeting" class="text">Hello, World!</p>
+					html.must.eql(new Html(outdent`
+						<p id="greeting" class="text">Hello, World!</p>
+					`))
+				})
+
+				it("must render tag with attribute with no value", function() {
+					var html = <script src="http://example.com" async defer />
+
+					html.must.eql(new Html(outdent`
+						<script src="http://example.com" async defer></script>
+					`))
+				})
+
+				it("must render tag with boolean attribute of undefined", function() {
+					var html = <script src="http://example.com" async={undefined} />
+					html.must.eql(new Html(`<script src="http://example.com"></script>`))
+				})
+
+				it("must render tag with boolean attribute of null", function() {
+					var html = <script src="http://example.com" async={null} />
+					html.must.eql(new Html(`<script src="http://example.com"></script>`))
+				})
+
+				it("must render tag with boolean attribute of true", function() {
+					var html = <script src="http://example.com" async={!!true} />
+					html.must.eql(new Html(outdent`
+						<script src="http://example.com" async></script>
+					`))
+				})
+
+				it("must render tag with boolean attribute of false", function() {
+					var html = <script src="http://example.com" async={false} />
+					html.must.eql(new Html(`<script src="http://example.com"></script>`))
+				})
+
+				it("must render tag with string attribute", function() {
+					var html = <input value={"hello"} />
+					html.must.eql(new Html(`<input value="hello" />`))
+				})
+
+				it("must render tag with number attribute", function() {
+					var html = <input maxlength={42} />
+					html.must.eql(new Html(`<input maxlength="42" />`))
+				})
+
+				it("must throw given array attribute", function() {
+					var err
+					try { void <p class={[]} /> } catch (ex) { err = ex }
+					err.must.be.an.error(TypeError, /attribute/)
+				})
+
+				it("must render tag with object attribute", function() {
+					var obj = {toString: () => "greeting"}
+					var html = <p class={obj}>Hello, World!</p>
+					html.must.eql(new Html(`<p class="greeting">Hello, World!</p>`))
+				})
+
+				it("must escape object attribute", function() {
+					var xss = {toString: () => "<script>alert(1&2)</script>"}
+					var html = <p class={xss}>Hello, world!</p>
+
+					html.must.eql(new Html(outdent`
+						<p class="<script>alert(1&2)</script>">Hello, world!</p>
+					`))
+				})
+
+				it("must render self-closing tag with attributes", function() {
+					var html = <input name="greeting" value="Hello, World!" />
+					html.must.eql(new Html(outdent`
+						<input name="greeting" value="Hello, World!" />
+					`))
+				})
+
+				it("must escape double quotes in attributes", function() {
+					var url = "http://example.com/John_\"Doe\"_Smith"
+					var html = <a href={url}>John</a>
+
+					html.must.eql(new Html(outdent`
+						<a href="http://example.com/John_&quot;Doe&quot;_Smith">John</a>
+					`))
+				})
+
+				it("must not escape single quotes in attributes", function() {
+					var url = "http://example.com/John_'Doe'_Smith"
+					var html = <a href={url}>John</a>
+
+					html.must.eql(new Html(outdent`
+						<a href="http://example.com/John_'Doe'_Smith">John</a>
+					`))
+				})
 			})
 
-			it("must render tag with attributes", function() {
-				var html = <p id="greeting" class="text">Hello, World!</p>
-				html.must.eql(new Html(outdent`
-					<p id="greeting" class="text">Hello, World!</p>
-				`))
+			describe("given <html>", function() {
+				it("must return with doctype", function() {
+					var html = <html>Hello, World</html>
+					html.must.eql(new Html("<!DOCTYPE html>\n<html>Hello, World</html>"))
+				})
 			})
 
-			it("must render tag with attribute with no value", function() {
-				var html = <script src="http://example.com" async defer />
+			describe("given <script>", function() {
+				it("must render tag with undefined child", function() {
+					var html = <script>alert("Hello, {undefined}!")</script>
+					html.must.eql(new Html(`<script>alert("Hello, !")</script>`))
+				})
 
-				html.must.eql(new Html(outdent`
-					<script src="http://example.com" async defer></script>
-				`))
-			})
+				it("must render tag with null child", function() {
+					var html = <script>alert("Hello, {null}!")</script>
+					html.must.eql(new Html(`<script>alert("Hello, !")</script>`))
+				})
 
-			it("must render tag with boolean attribute of undefined", function() {
-				var html = <script src="http://example.com" async={undefined} />
-				html.must.eql(new Html(`<script src="http://example.com"></script>`))
-			})
+				it("must render tag with number child", function() {
+					var html = <script>alert("Hello, {42}!")</script>
+					html.must.eql(new Html(`<script>alert("Hello, 42!")</script>`))
+				})
 
-			it("must render tag with boolean attribute of null", function() {
-				var html = <script src="http://example.com" async={null} />
-				html.must.eql(new Html(`<script src="http://example.com"></script>`))
-			})
+				it("must render tag with string child", function() {
+					var html = <script>alert("Hello, World")</script>
+					html.must.eql(new Html(`<script>alert("Hello, World")</script>`))
+				})
 
-			it("must render tag with boolean attribute of true", function() {
-				var html = <script src="http://example.com" async={!!true} />
-				html.must.eql(new Html(outdent`
-					<script src="http://example.com" async></script>
-				`))
-			})
+				it("must not escape entities in string children", function() {
+					var html = <script>alert("Rock &amp; Roll")</script>
+					html.must.eql(new Html(`<script>alert("Rock & Roll")</script>`))
+				})
 
-			it("must render tag with boolean attribute of false", function() {
-				var html = <script src="http://example.com" async={false} />
-				html.must.eql(new Html(`<script src="http://example.com"></script>`))
-			})
+				it("must not escape </scrip in string children", function() {
+					// http://handlebarsjs.com/
+					var html = <script>{`if (0 < 1) alert("</scrip")`}</script>
 
-			it("must render tag with string attribute", function() {
-				var html = <input value={"hello"} />
-				html.must.eql(new Html(`<input value="hello" />`))
-			})
+					html.must.eql(new Html(outdent`
+						<script>if (0 < 1) alert("</scrip")</script>
+					`))
+				})
 
-			it("must render tag with number attribute", function() {
-				var html = <input maxlength={42} />
-				html.must.eql(new Html(`<input maxlength="42" />`))
-			})
+				it("must escape </script in string children", function() {
+					// http://handlebarsjs.com/
+					var html = <script>{`if (0 < 1) alert("</script")`}</script>
 
-			it("must throw given array attribute", function() {
-				var err
-				try { void <p class={[]} /> } catch (ex) { err = ex }
-				err.must.be.an.error(TypeError, /attribute/)
-			})
+					html.must.eql(new Html(outdent`
+						<script>if (0 < 1) alert("<\\/script")</script>
+					`))
+				})
 
-			it("must render tag with object attribute", function() {
-				var obj = {toString: () => "greeting"}
-				var html = <p class={obj}>Hello, World!</p>
-				html.must.eql(new Html(`<p class="greeting">Hello, World!</p>`))
-			})
+				it("must escape </script> in string children", function() {
+					// http://handlebarsjs.com/
+					var html = <script>{`if (0 < 1) alert("</script>")`}</script>
 
-			it("must escape object attribute", function() {
-				var xss = {toString: () => "<script>alert(1&2)</script>"}
-				var html = <p class={xss}>Hello, world!</p>
+					html.must.eql(new Html(outdent`
+						<script>if (0 < 1) alert("<\\/script>")</script>
+					`))
+				})
 
-				html.must.eql(new Html(outdent`
-					<p class="<script>alert(1&2)</script>">Hello, world!</p>
-				`))
-			})
+				it("must not escape element children twice", function() {
+					// http://handlebarsjs.com/
+					var html = <script type="text/x-handlebars-template">
+						<div class="entry">
+							<h1>{"{{"}title{"}}"}</h1>
+							<div class="body">Rock &amp; {"{{"}body{"}}"}</div>
+						</div>
+					</script>
 
-			it("must render self-closing tag with attributes", function() {
-				var html = <input name="greeting" value="Hello, World!" />
-				html.must.eql(new Html(outdent`
-					<input name="greeting" value="Hello, World!" />
-				`))
-			})
+					html.must.eql(new Html(outdent`
+						<script type="text/x-handlebars-template">
+							<div class="entry">
+								<h1>{{title}}</h1>
+								<div class="body">Rock &amp; {{body}}</div>
+							</div>
+						</script>
+					`.replace(/\s*\n\s*/g, "")))
+				})
 
-			it("must escape double quotes in interpolated attributes", function() {
-				var url = "http://example.com/John_\"Doe\"_Smith"
-				var html = <a href={url}>John</a>
+				it("must not escape array string children", function() {
+					var html = <script>alert("Hello, {["Rock & Roll"]}!")</script>
+					html.must.eql(new Html(outdent`
+						<script>alert("Hello, Rock & Roll!")</script>
+					`))
+				})
 
-				html.must.eql(new Html(outdent`
-					<a href="http://example.com/John_&quot;Doe&quot;_Smith">John</a>
-				`))
-			})
+				it("must render object", function() {
+					var date = new Date(2015, 5, 18)
+					var html = <script>alert("Hello, {date}!")</script>
+					html.must.eql(new Html(outdent`
+						<script>alert("Hello, ${date.toString()}!")</script>
+					`))
+				})
 
-			it("must not escape single quotes in interpolated attributes",
-				function() {
-				var url = "http://example.com/John_'Doe'_Smith"
-				var html = <a href={url}>John</a>
+				it("must escape object", function() {
+					var xss = {toString: () => "<script>alert(1&2)</script>"}
+					var html = <script>Hello, {xss}!</script>
 
-				html.must.eql(new Html(outdent`
-					<a href="http://example.com/John_'Doe'_Smith">John</a>
-				`))
-			})
+					html.must.eql(new Html(outdent`
+						<script>Hello, <script>alert(1&2)<\\/script>!</script>
+					`))
+				})
 
-			it("must return a doctype with <html>", function() {
-				var html = <html>Hello, World</html>
-				html.must.eql(new Html("<!DOCTYPE html>\n<html>Hello, World</html>"))
+				it("must not escape </script> in element children", function() {
+					// http://handlebarsjs.com/
+					var html = <script type="text/x-handlebars-template">
+						<script>
+							alert(1&amp;2)
+						</script>
+					</script>
+
+					html.must.eql(new Html(outdent`
+						<script type="text/x-handlebars-template">
+							<script>
+								alert(1&2)
+							</script>
+						</script>
+					`.replace(/\s*\n\s*/g, "")))
+				})
+
+				it("must not escape Html", function() {
+					var html = <script>
+						Hello, {new Html("<script>alert(1&2)</script>")}!
+					</script>
+
+					html.must.eql(new Html(outdent`
+						<script>Hello, <script>alert(1&2)</script>!</script>
+					`))
+				})
 			})
 		})
 
@@ -221,7 +353,7 @@ describe("Jsx", function() {
 				html.must.eql(new Html("<p>Hello, World</p>"))
 			})
 
-			it("must render component with text and element children", function() {
+			it("must render component with string and element children", function() {
 				var html = <Paragraph>Hello, <span>World</span>!</Paragraph>
 				html.must.eql(new Html("<p>Hello, <span>World</span>!</p>"))
 			})
@@ -239,7 +371,12 @@ describe("Jsx", function() {
 					Glad to have you.
 				</Paragraph>
 
-				html.must.eql(new Html(`<p><span id="greeting">Hello, World!</span><br />Glad to have you.</p>`))
+					html.must.eql(new Html(`<p>
+						<span id="greeting">Hello, World!</span>
+						<br />
+						Glad to have you.
+						</p>
+					`.replace(/\s*\n\s*/g, "")))
 			})
 
 			it("must call with null given no attributes but children", function() {
@@ -276,6 +413,12 @@ describe("Jsx", function() {
 				new Html("<p>Hello, World!</p>"),
 				new Html("<p>What's up?</p>")
 			])
+		})
+	})
+
+	describe(".html", function() {
+		it("must return an instance of Html", function() {
+			Jsx.html("Rock &amp; Roll").must.eql(new Html("Rock &amp; Roll"))
 		})
 	})
 })
