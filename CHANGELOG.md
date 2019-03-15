@@ -1,5 +1,6 @@
 ## Unreleased
 - Fixes escaping uppercase variations of `</script` in `<script>` tags.
+- Escapes comments (`<!--`) in `<script>` tags.
 
 ## 0.2.0 (Mar 15, 2019)
 - Alters `<script>`s' children escaping.  

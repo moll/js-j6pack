@@ -282,6 +282,14 @@ describe("Jsx", function() {
 					`))
 				})
 
+				it("must escape <!-- in string children", function() {
+					var html = <script>{`if (0 < 1) alert("<!-- <script>")`}</script>
+
+					html.must.eql(new Html(outdent`
+						<script>if (0 < 1) alert("<\\!-- <script>")</script>
+					`))
+				})
+
 				it("must not escape element children twice", function() {
 					var html = <script type="text/x-handlebars-template">
 						<div class="entry">

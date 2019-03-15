@@ -100,9 +100,11 @@ function escapeHtml(text) {
 	return text
 }
 
-// https://www.w3.org/TR/html52/semantics-scripting.html#restrictions-for-contents-of-script-elements
 function escapeScript(text) {
-	return text.replace(/<\/(script)/gi, "<\\/$1")
+	// https://www.w3.org/TR/html52/semantics-scripting.html#restrictions-for-contents-of-script-elements
+	text = text.replace(/<\/(script)/gi, "<\\/$1")
+	text = text.replace(/<!--/g, "<\\!--")
+	return text
 }
 
 function typeOf(value) {
