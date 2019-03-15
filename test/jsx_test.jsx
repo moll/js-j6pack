@@ -251,7 +251,6 @@ describe("Jsx", function() {
 				})
 
 				it("must not escape </scrip in string children", function() {
-					// http://handlebarsjs.com/
 					var html = <script>{`if (0 < 1) alert("</scrip")`}</script>
 
 					html.must.eql(new Html(outdent`
@@ -260,7 +259,6 @@ describe("Jsx", function() {
 				})
 
 				it("must escape </script in string children", function() {
-					// http://handlebarsjs.com/
 					var html = <script>{`if (0 < 1) alert("</script")`}</script>
 
 					html.must.eql(new Html(outdent`
@@ -277,7 +275,6 @@ describe("Jsx", function() {
 				})
 
 				it("must escape </script> in string children", function() {
-					// http://handlebarsjs.com/
 					var html = <script>{`if (0 < 1) alert("</script>")`}</script>
 
 					html.must.eql(new Html(outdent`
@@ -286,7 +283,6 @@ describe("Jsx", function() {
 				})
 
 				it("must not escape element children twice", function() {
-					// http://handlebarsjs.com/
 					var html = <script type="text/x-handlebars-template">
 						<div class="entry">
 							<h1>{"{{"}title{"}}"}</h1>
@@ -329,7 +325,6 @@ describe("Jsx", function() {
 				})
 
 				it("must not escape </script> in element children", function() {
-					// http://handlebarsjs.com/
 					var html = <script type="text/x-handlebars-template">
 						<script>
 							alert(1&amp;2)
