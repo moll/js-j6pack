@@ -49,6 +49,11 @@ describe("Jsx", function() {
 				html.must.eql(new Html("<p>Hello, !</p>"))
 			})
 
+			it("must render tag with boolean child", function() {
+				var html = <p>Hello, {true}!</p>
+				html.must.eql(new Html("<p>Hello, true!</p>"))
+			})
+
 			it("must render tag with number child", function() {
 				var html = <p>Hello, {42}!</p>
 				html.must.eql(new Html("<p>Hello, 42!</p>"))
@@ -223,6 +228,11 @@ describe("Jsx", function() {
 				it("must render tag with null child", function() {
 					var html = <script>alert("Hello, {null}!")</script>
 					html.must.eql(new Html(`<script>alert("Hello, !")</script>`))
+				})
+
+				it("must render tag with null child", function() {
+					var html = <script>alert("Hello, {true}!")</script>
+					html.must.eql(new Html(`<script>alert("Hello, true!")</script>`))
 				})
 
 				it("must render tag with number child", function() {

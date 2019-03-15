@@ -37,6 +37,7 @@ function renderChild(children, child) {
 	switch (typeOf(child)) {
 		case "undefined":
 		case "null": break
+		case "boolean":
 		case "number": children.push(child); break
 		case "string": children.push(escapeHtml(child)); break
 		case "array": return child.reduce(renderChild, children)
@@ -56,6 +57,7 @@ function renderScriptChild(children, child) {
 	switch (typeOf(child)) {
 		case "undefined":
 		case "null": break
+		case "boolean":
 		case "number": children.push(child); break
 		case "string": children.push(escapeScript(child)); break
 		case "array": return child.reduce(renderScriptChild, children)
