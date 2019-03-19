@@ -290,24 +290,6 @@ describe("Jsx", function() {
 					`))
 				})
 
-				it("must not escape element children twice", function() {
-					var html = <script type="text/x-handlebars-template">
-						<div class="entry">
-							<h1>{"{{"}title{"}}"}</h1>
-							<div class="body">Rock &amp; {"{{"}body{"}}"}</div>
-						</div>
-					</script>
-
-					html.must.eql(new Html(outdent`
-						<script type="text/x-handlebars-template">
-							<div class="entry">
-								<h1>{{title}}</h1>
-								<div class="body">Rock &amp; {{body}}</div>
-							</div>
-						</script>
-					`.replace(/\s*\n\s*/g, "")))
-				})
-
 				it("must not escape array string children", function() {
 					var html = <script>alert("Hello, {["Rock & Roll"]}!")</script>
 					html.must.eql(new Html(outdent`
@@ -330,6 +312,24 @@ describe("Jsx", function() {
 					html.must.eql(new Html(outdent`
 						<script>Hello, <script>alert(1&2)<\\/script>!</script>
 					`))
+				})
+
+				it("must not escape element children twice", function() {
+					var html = <script type="text/x-handlebars-template">
+						<div class="entry">
+							<h1>{"{{"}title{"}}"}</h1>
+							<div class="body">Rock &amp; {"{{"}body{"}}"}</div>
+						</div>
+					</script>
+
+					html.must.eql(new Html(outdent`
+						<script type="text/x-handlebars-template">
+							<div class="entry">
+								<h1>{{title}}</h1>
+								<div class="body">Rock &amp; {{body}}</div>
+							</div>
+						</script>
+					`.replace(/\s*\n\s*/g, "")))
 				})
 
 				it("must not escape </script> in element children", function() {
