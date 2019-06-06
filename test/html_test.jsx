@@ -4,6 +4,12 @@ var Fragment = Jsx.Fragment
 var Html = Jsx.Html
 var outdent = require("./outdent")
 
+// https://www.w3.org/TR/html5/syntax.html#void-elements
+var SELF_CLOSING = [
+	"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
+	"param", "source", "track", "wbr"
+]
+
 describe("HTML JSX", function() {
 	require("./_jsx")(Jsx, Html)
 
@@ -12,14 +18,30 @@ describe("HTML JSX", function() {
 			it("must not self-close a non-self-closing tag", function() {
 				<script />.must.eql(new Html("<script></script>"))
 			})
+
+			SELF_CLOSING.forEach(function(tagName) {
+				it(`must render self-closing <${tagName}>`, function() {
+					Jsx(tagName).must.eql(new Html(`<${tagName} />`))
+				})
+
+				it(`must throw RangeError given children for <${tagName}> `,
+					function() {
+					var err
+					try { Jsx(tagName, null, [<p />]) }
+					catch (ex) { err = ex }
+					err.must.be.an.error(RangeError, /children/i)
+				})
+			})
 		})
 
 		describe("given a plain tag and attributes", function() {
-			it("must render self-closing tag with attributes", function() {
-				var html = <input name="greeting" value="Hello, World!" />
-				html.must.eql(new Html(outdent`
-					<input name="greeting" value="Hello, World!" />
-				`))
+			SELF_CLOSING.forEach(function(tagName) {
+				it(`must render self-closing <${tagName}> with attributes`, function() {
+					var html = Jsx(tagName, {name: "greeting", value: "Hello, World!"})
+					html.must.eql(new Html(outdent`
+						<${tagName} name="greeting" value="Hello, World!" />
+					`))
+				})
 			})
 		})
 
