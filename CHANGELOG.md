@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.0 (Jun 6, 2019)
 - Removes the automatically prepended HTML doctype in preparation for XML support.  
   Instead, call `Html.prototype.toString` with `"doctype"` to have it be prepended whenever you wish:
 
