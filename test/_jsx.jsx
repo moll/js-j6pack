@@ -120,33 +120,28 @@ module.exports = function(Jsx, Markup) {
 			})
 
 			it("must render tag with attribute with no value", function() {
-				var markup = <script src="http://example.com" async defer />
-
-				markup.must.eql(new Markup(outdent`
-					<script src="http://example.com" async defer></script>
-				`))
+				var markup = <input type="email" required autofocus />
+				markup.must.eql(new Markup(`<input type="email" required autofocus />`))
 			})
 
 			it("must render tag with boolean attribute of undefined", function() {
-				var ml = <script src="http://example.com" async={undefined} />
-				ml.must.eql(new Markup(`<script src="http://example.com"></script>`))
+				var markup = <input type="email" required={undefined} />
+				markup.must.eql(new Markup(`<input type="email" />`))
 			})
 
 			it("must render tag with boolean attribute of null", function() {
-				var ml = <script src="http://example.com" async={null} />
-				ml.must.eql(new Markup(`<script src="http://example.com"></script>`))
+				var markup = <input type="email" required={null} />
+				markup.must.eql(new Markup(`<input type="email" />`))
 			})
 
 			it("must render tag with boolean attribute of true", function() {
-				var markup = <script src="http://example.com" async={!!true} />
-				markup.must.eql(new Markup(outdent`
-					<script src="http://example.com" async></script>
-				`))
+				var markup = <input type="email" required={!!true} />
+				markup.must.eql(new Markup(`<input type="email" required />`))
 			})
 
 			it("must render tag with boolean attribute of false", function() {
-				var markup = <script src="http://example.com" async={false} />
-				markup.must.eql(new Markup(`<script src="http://example.com"></script>`))
+				var markup = <input type="email" required={false} />
+				markup.must.eql(new Markup(`<input type="email" />`))
 			})
 
 			it("must render tag with string attribute", function() {

@@ -10,6 +10,7 @@ J6Pack.js depends on [JsxTransform][jsx-transform] for parsing and compiling JSX
 [express]: https://expressjs.com
 [jsx-transform]: https://www.npmjs.com/package/jsx-transform
 
+
 Installing
 ----------
 ```sh
@@ -43,6 +44,28 @@ Jsx("p", null, ["Hello, world!"]) instanceof Jsx.Html // => true
 ```
 
 To use the JSX syntax (`<p>Hello, {name}!</p>`) in JavaScript on Node.js, read on. *Note*, however, that for now you need to name the export of J6Pack.js to `Jsx` as the JSX compiler is hard-coded to use that. If you wish it to be customizable, please [let me know][email].
+
+### XML
+J6Pack.js by default renders HTML5 compatible HTML. If you'd like to use it to render generic XML, for example to render an [Atom feed](https://en.wikipedia.org/wiki/Atom_(Web_standard)), you can require the XML variant:
+
+```javascript
+var Jsx = require("j6pack/xml")
+
+var atom = <feed xmlns="http://www.w3.org/2005/Atom">
+  <id>http://example.com</id>
+  <title>My Blog</title>
+
+  {articles.map(function(article) {
+    return <entry>
+      <id>{article.url}</id>
+      <title>{article.title}</title>
+      <content type="text">{article.text}</content>
+    </entry>
+  })}
+</feed>
+```
+
+Note that unfortunately the [JsxTransform][jsx-transform] library J6Pack.js uses for converting JSX to JavaScript doesn't support XML namespace aliases at the moment. Namespace alias are when you set the namespace with `xmlns:atom="http://www.w3.org/2005/Atom"` and use tags in the style of `<atom:feed>`. I will probably eventually rewrite JsxTransform to support that. Alternatively, you could see about using another transformation library (Babel.js, perhaps) and just using J6Pack's rendering functions.
 
 ### Node.js
 To add support for JSX syntax to Node.js, require `j6pack/register` before starting the app:
