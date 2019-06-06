@@ -2,6 +2,7 @@ var isArray = Array.isArray
 var VOID_ELEMENTS = require("void-elements")
 var VOID_ERR = "Children given to self-closing element: "
 var EMPTY_ARR = Array.prototype
+var DOCTYPE = "<!DOCTYPE html>\n"
 exports = module.exports = jsx
 exports.Fragment = Fragment
 exports.Html = Html
@@ -29,7 +30,6 @@ function render(tagName, attrs, children) {
 		html += ">" + children.join("") + "</" + tagName + ">"
 	}
 
-	if (tagName == "html") html = "<!DOCTYPE html>\n" + html
 	return new Html(html)
 }
 
@@ -115,7 +115,14 @@ function Fragment(_attrs, children) { return children }
 
 function Html(html) { this.value = html }
 Html.prototype.valueOf = function() { return this.value }
-Html.prototype.toString = Html.prototype.valueOf
+
+Html.prototype.toString = function(fmt) {
+	switch (fmt) {
+		case undefined: return this.value
+		case "doctype": return DOCTYPE + this.value
+		default: throw new RangeError("Invalid HTML format: " + fmt)
+	}
+}
 
 function escapeAttr(attr) { return attr.replace(/"/g, "&quot;") }
 function isEmpty(obj) { for (var _key in obj) return false; return true }

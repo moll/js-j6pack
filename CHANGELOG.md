@@ -1,3 +1,14 @@
+## Unreleased
+- Removes the automatically prepended HTML doctype in preparation for XML support.  
+  Instead, call `Html.prototype.toString` with `"doctype"` to have it be prepended whenever you wish:
+
+  ```js
+  var html = <html><body><p>Hello, world!</p></body></html>
+  html.toString("doctype") // => "<!DOCTYPE html>\n<html>"…
+  ```
+
+  If you use the included Connect/Express middleware, that will prepend the doctype for you, too.
+
 ## 0.2.1 (Mar 15, 2019)
 - Fixes escaping uppercase variations of `</script` in `<script>` tags.
 - Escapes comments (`<!--`) in `<script>` tags.

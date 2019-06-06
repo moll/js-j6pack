@@ -23,13 +23,6 @@ describe("HTML JSX", function() {
 			})
 		})
 
-		describe("given <html>", function() {
-			it("must return with doctype", function() {
-				var html = <html>Hello, World</html>
-				html.must.eql(new Html("<!DOCTYPE html>\n<html>Hello, World</html>"))
-			})
-		})
-
 		describe("given <script>", function() {
 			it("must render tag with undefined child", function() {
 				var html = <script>alert("Hello, {undefined}!")</script>
@@ -167,6 +160,19 @@ describe("HTML JSX", function() {
 				html.must.eql(new Html(outdent`
 					<script>Hello, <script>alert(1&2)</script>!</script>
 				`))
+			})
+		})
+	})
+
+	describe("Html", function() {
+		describe(".prototype.toString", function() {
+			it("must return HTML", function() {
+				<p>Hello, world!</p>.toString().must.equal("<p>Hello, world!</p>")
+			})
+
+			it("must return HTML with doctype if asked for", function() {
+				var html = <p>Hello, world!</p>.toString("doctype")
+				html.must.eql("<!DOCTYPE html>\n<p>Hello, world!</p>")
 			})
 		})
 	})

@@ -118,10 +118,10 @@ var Express = require("express")
 var app = Express()
 
 app.get("/", function(_req, res) {
-  res.render(String(<html>
+  res.send(<html>
     <head><title>J6Pack Test Express Server</title></head>
     <body><p>Hello, world!</p></body>
-  </html>))
+  </html>.toString("doctype"))
 })
 
 Http.createServer(handleRequest).listen(process.env.PORT || 3000)
