@@ -1,12 +1,14 @@
 J6Pack.js
 =========
 [![NPM version][npm-badge]](https://www.npmjs.com/package/j6pack)
+[![Build status][travis-badge]](https://travis-ci.org/moll/js-j6pack)
 
 J6Pack.js is a JavaScript library that renders **JSX to HTML**. It's also usable from Node.js to **render JSX on the server side** and can hook into **[Express.js][express] view rendering**. It's **minimal** and **does not depend on React**.
 
 J6Pack.js depends on [JsxTransform][jsx-transform] for parsing and compiling JSX to function calls, but you're welcome to use compatible parsers and hook `.jsx` file handling into Node.js yourself.
 
 [npm-badge]: https://img.shields.io/npm/v/j6pack.svg
+[travis-badge]: https://travis-ci.org/moll/js-j6pack.svg?branch=master
 [express]: https://expressjs.com
 [jsx-transform]: https://www.npmjs.com/package/jsx-transform
 
