@@ -91,10 +91,10 @@ var Http = require("http")
 function handleRequest(_req, res) {
   res.setHeader("Content-Type", "text/html; charset=utf-8")
 
-  res.end(String(<html>
+  res.end(<html>
     <head><title>J6Pack Test Server</title></head>
     <body><p>Hello, world!</p></body>
-  </html>))
+  </html>.toString("doctype"))
 }
 
 Http.createServer(handleRequest).listen(process.env.PORT || 3000)
