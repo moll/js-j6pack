@@ -171,7 +171,7 @@ module.exports = function(Jsx, Markup) {
 				var markup = <p class={xss}>Hello, world!</p>
 
 				markup.must.eql(new Markup(outdent`
-					<p class="<script>alert(1&2)</script>">Hello, world!</p>
+					<p class="<script>alert(1&amp;2)</script>">Hello, world!</p>
 				`))
 			})
 
@@ -191,6 +191,20 @@ module.exports = function(Jsx, Markup) {
 				markup.must.eql(new Markup(outdent`
 					<a href="http://example.com/John_'Doe'_Smith">John</a>
 				`))
+			})
+
+			it("must escape ampersands in attributes", function() {
+				var url = "http://example.com?foo=bar&baz=boo"
+				var markup = <a href={url}>John</a>
+
+				markup.must.eql(new Markup(outdent`
+					<a href="http://example.com?foo=bar&amp;baz=boo">John</a>
+				`))
+			})
+
+			it("must not escape markup in attributes", function() {
+				var markup = <p title={new Markup("Foo&copy;")}>Foo</p>
+				markup.must.eql(new Markup("<p title=\"Foo&copy;\">Foo</p>"))
 			})
 		})
 

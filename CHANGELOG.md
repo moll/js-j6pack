@@ -1,10 +1,20 @@
+## Unreleased
+- Escapes ampersands (`&`) in HTML and XML attributes.  
+  Previous behavior permitted using HTML entities in attributes, but it's safer to opt-in to that where necessary with `Jsx.html`:
+
+  ```javascript
+  var Jsx = require("j6pack")
+  var html = <a title={Jsx.html("Foo&copy;")}>Foo</a>
+  html.toString() // => <a title="Foo&copy;">Foo</a>
+  ```
+
 ## 1.0.0 (Jun 6, 2019)
 - Removes the automatically prepended HTML doctype in preparation for XML support.  
   Instead, call `Html.prototype.toString` with `"doctype"` to have it be prepended whenever you wish:
 
   ```javascript
   var html = <html><body><p>Hello, world!</p></body></html>
-  html.toString("doctype") // => "<!DOCTYPE html>\n<html>"…
+  html.toString("doctype") // => <!DOCTYPE html>\n<html>…
   ```
 
   If you use the included Connect/Express middleware, that will prepend the doctype for you, too.
