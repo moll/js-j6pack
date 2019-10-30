@@ -171,7 +171,7 @@ module.exports = function(Jsx, Markup) {
 				var markup = <p class={xss}>Hello, world!</p>
 
 				markup.must.eql(new Markup(outdent`
-					<p class="<script>alert(1&amp;2)</script>">Hello, world!</p>
+					<p class="&lt;script>alert(1&amp;2)&lt;/script>">Hello, world!</p>
 				`))
 			})
 
@@ -199,6 +199,14 @@ module.exports = function(Jsx, Markup) {
 
 				markup.must.eql(new Markup(outdent`
 					<a href="http://example.com?foo=bar&amp;baz=boo">John</a>
+				`))
+			})
+
+			it("must escape less-than in attributes", function() {
+				var markup = <code title="1 < 2">One is less than two.</code>
+
+				markup.must.eql(new Markup(outdent`
+					<code title="1 &lt; 2">One is less than two.</code>
 				`))
 			})
 

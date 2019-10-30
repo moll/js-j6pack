@@ -8,6 +8,9 @@
   html.toString() // => <a title="Foo&copy;">Foo</a>
   ```
 
+- Escapes less-than (`<`) in XML attributes.  
+  While not necessary for HTML, it is necessary for XML validation.
+
 ## 1.0.0 (Jun 6, 2019)
 - Removes the automatically prepended HTML doctype in preparation for XML support.  
   Instead, call `Html.prototype.toString` with `"doctype"` to have it be prepended whenever you wish:
