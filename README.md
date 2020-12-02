@@ -35,7 +35,7 @@ var html = Jsx("p", null, [
   "!"
 ])
 
-String(html) // => "<p>Hello, <span>world</span>!</p>"
+String(html) // => "<p>Hello, <em>world</em>!</p>"
 ```
 
 The `html` variable itself is an instance of `Jsx.Html` with `valueOf` and `toString` methods that return the HTML for the entire tree. The use of a value object over a string is mostly an implementation requirement of the way JSX compilers work. It does however permit you to differentiate between unescaped strings and escaped HTML via `instanceof` should you need to:
@@ -127,7 +127,7 @@ var Jsx = require("j6pack")
 module.exports = function(attrs) {
   return <html>
     <head><title>J6Pack Test Express Template Server</title></head>
-    <body><p>{attrs.getting}</p></body>
+    <body><p>{attrs.greeting}</p></body>
   </html>
 }
 ```
