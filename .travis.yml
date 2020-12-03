@@ -12,5 +12,9 @@ node_js:
   - "12"
   - "13"
 
+install:
+  # The default "npm ci" fails with NPM v6.
+  - npm install
+
 notifications:
   email: ["andri@dot.ee"]
