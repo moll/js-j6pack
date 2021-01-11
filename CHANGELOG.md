@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.0 (Jan 11, 2021)
 - Escapes ampersands (`&`) in HTML and XML attributes.  
   Previous behavior permitted using HTML entities in attributes, but it's safer to opt-in to that where necessary with `Jsx.html`:
 
