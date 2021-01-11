@@ -10,6 +10,8 @@
 
 - Escapes less-than (`<`) in XML attributes.  
   While not necessary for HTML, it is necessary for XML validation.
+- Escapes carriage returns (`\r`) in tag content to align with [XML end-of-line handling](https://www.w3.org/TR/REC-xml/#sec-line-ends).
+- Escapes tabs, newlines and carriage returns in tag attributes for [XML attribute normalization](https://www.w3.org/TR/REC-xml/#AVNormalize).
 
 ## 1.0.0 (Jun 6, 2019)
 - Removes the automatically prepended HTML doctype in preparation for XML support.  

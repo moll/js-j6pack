@@ -1,4 +1,5 @@
 /** @jsx Jsx */
+var O = require("oolong")
 var demand = require("must")
 var outdent = require("./outdent")
 
@@ -56,18 +57,43 @@ module.exports = function(Jsx, Markup) {
 				<p>Hello, World</p>.must.eql(new Markup("<p>Hello, World</p>"))
 			})
 
-			it("must escape string child", function() {
-				var xss = "<script>alert(1&2)</script>"
-				var markup = <p>Hello, {xss}!</p>
-				markup.must.eql(new Markup(outdent`
-					<p>Hello, &lt;script&gt;alert(1&amp;2)&lt;/script&gt;!</p>
-				`))
+			// These escapes also match the canonicalization model.
+			// https://www.w3.org/TR/xml-c14n/#ProcessingModel
+			O.each({
+				"&": "&amp;",
+				"<": "&lt;",
+				">": "&gt;",
+				"\r": "&#xD;"
+			}, function(to, from) {
+				it("must escape " + JSON.stringify(from) + " in string child",
+					function() {
+					var markup = <p>Hello, {"John " + from + " Smith"}!</p>
+					markup.must.eql(new Markup(`<p>Hello, John ${to} Smith!</p>`))
+				})
+
+				it("must escape " + JSON.stringify(from) + " in object child",
+					function() {
+					var name = {toString: () => "John " + from + " Smith"}
+					var markup = <p>Hello, {name}!</p>
+					markup.must.eql(new Markup(`<p>Hello, John ${to} Smith!</p>`))
+				})
 			})
 
-			it("must not escape quotes in string child", function() {
-				var name = "John \"Doe\" Smith's Car"
-				var markup = <p>Hello, {name}!</p>
-				markup.must.eql(new Markup(`<p>Hello, John "Doe" Smith's Car!</p>`))
+			O.each({
+				"double quotes": "John \"Doe\" Smith",
+				"single quotes": "John's Car",
+				"tabs": "John\tSmith",
+				"newlines": "John\nSmith"
+			}, function(value, title) {
+				it(`must not escape ${title} in string child`, function() {
+					var markup = <p>Hello, {value}!</p>
+					markup.must.eql(new Markup(`<p>Hello, ${value}!</p>`))
+				})
+
+				it(`must not escape ${title} in object child`, function() {
+					var markup = <p>Hello, {{toString: () => value}}!</p>
+					markup.must.eql(new Markup(`<p>Hello, ${value}!</p>`))
+				})
 			})
 
 			it("must render tag with string and element children", function() {
@@ -89,15 +115,6 @@ module.exports = function(Jsx, Markup) {
 				var date = new Date(2015, 5, 18)
 				var markup = <p>Hello, {date}!</p>
 				markup.must.eql(new Markup("<p>Hello, " + date.toString() + "!</p>"))
-			})
-
-			it("must escape object", function() {
-				var xss = {toString: () => "<script>alert(1&2)</script>"}
-				var markup = <p>Hello, {xss}!</p>
-
-				markup.must.eql(new Markup(outdent`
-					<p>Hello, &lt;script&gt;alert(1&amp;2)&lt;/script&gt;!</p>
-				`))
 			})
 
 			it("must not escape markup", function() {
@@ -166,48 +183,43 @@ module.exports = function(Jsx, Markup) {
 				markup.must.eql(new Markup(`<p class="greeting">Hello, World!</p>`))
 			})
 
-			it("must escape object attribute", function() {
-				var xss = {toString: () => "<script>alert(1&2)</script>"}
-				var markup = <p class={xss}>Hello, world!</p>
+			// These escapes also match the canonicalization model.
+			// https://www.w3.org/TR/xml-c14n/#ProcessingModel
+			O.each({
+				"&": "&amp;",
+				"<": "&lt;",
+				"\"": "&quot;",
+				"\t": "&#x9;",
+				"\n": "&#xA;",
+				"\r": "&#xD;"
+			}, function(to, from) {
+				it("must escape " + JSON.stringify(from) + " in string attribute",
+					function() {
+					var markup = <p title={"John " + from + " Smith"}>John</p>
+					markup.must.eql(new Markup(`<p title="John ${to} Smith">John</p>`))
+				})
 
-				markup.must.eql(new Markup(outdent`
-					<p class="&lt;script>alert(1&amp;2)&lt;/script>">Hello, world!</p>
-				`))
+				it("must escape " + JSON.stringify(from) + " in object attribute",
+					function() {
+					var title = {toString: () => "John " + from + " Smith"}
+					var markup = <p title={title}>John</p>
+					markup.must.eql(new Markup(`<p title="John ${to} Smith">John</p>`))
+				})
 			})
 
-			it("must escape double quotes in attributes", function() {
-				var url = "http://example.com/John_\"Doe\"_Smith"
-				var markup = <a href={url}>John</a>
+			O.each({
+				"single quotes": "John's Car",
+				"greater-than": "John > Car"
+			}, function(value, title) {
+				it(`must not escape ${title} in string attribute`, function() {
+					var markup = <p title={value}>John</p>
+					markup.must.eql(new Markup(`<p title="${value}">John</p>`))
+				})
 
-				markup.must.eql(new Markup(outdent`
-					<a href="http://example.com/John_&quot;Doe&quot;_Smith">John</a>
-				`))
-			})
-
-			it("must not escape single quotes in attributes", function() {
-				var url = "http://example.com/John_'Doe'_Smith"
-				var markup = <a href={url}>John</a>
-
-				markup.must.eql(new Markup(outdent`
-					<a href="http://example.com/John_'Doe'_Smith">John</a>
-				`))
-			})
-
-			it("must escape ampersands in attributes", function() {
-				var url = "http://example.com?foo=bar&baz=boo"
-				var markup = <a href={url}>John</a>
-
-				markup.must.eql(new Markup(outdent`
-					<a href="http://example.com?foo=bar&amp;baz=boo">John</a>
-				`))
-			})
-
-			it("must escape less-than in attributes", function() {
-				var markup = <code title="1 < 2">One is less than two.</code>
-
-				markup.must.eql(new Markup(outdent`
-					<code title="1 &lt; 2">One is less than two.</code>
-				`))
+				it(`must not escape ${title} in object attribute`, function() {
+					var markup = <p title={{toString: () => value}}>John</p>
+					markup.must.eql(new Markup(`<p title="${value}">John</p>`))
+				})
 			})
 
 			it("must not escape markup in attributes", function() {

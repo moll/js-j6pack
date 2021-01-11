@@ -7,7 +7,7 @@ var outdent = require("./outdent")
 describe("XML JSX", function() {
 	require("./_jsx")(Jsx, Xml)
 
-	describe("as an HTML JSX function", function() {
+	describe("as an XML JSX function", function() {
 		describe("given a plain tag", function() {
 			it("must self-close a non-self-closing HTML tag", function() {
 				<input />.must.eql(new Xml("<input />"))
