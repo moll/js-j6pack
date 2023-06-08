@@ -1,4 +1,4 @@
-var Jsx = require("./lib/jsx")
+var Jsx = require("./lib/markup")
 var Markup = Jsx.Markup
 var renderChild = Jsx.renderChild
 var renderAttrs = Jsx.renderAttributes
