@@ -13,11 +13,13 @@ describe("XML JSX", function() {
 				<input />.must.eql(new Xml("<input />"))
 			})
 
-			//xit("must support namespace aliases", function() {
-			//  return <atom:feed xmlns:atom="http://www.w3.org/2005/Atom">
-			//    <atom:id>http://example.com</atom:id>
-			//  </atom:feed>
-			//})
+			it("must support namespace aliases", function() {
+				<atom:feed xmlns:atom="http://www.w3.org/2005/Atom">
+					<atom:id>http://example.com</atom:id>
+				</atom:feed>.must.eql(new Xml(outdent`
+					<atom:feed xmlns:atom="http://www.w3.org/2005/Atom"><atom:id>http://example.com</atom:id></atom:feed>
+				`))
+			})
 		})
 	})
 

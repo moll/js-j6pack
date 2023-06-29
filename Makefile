@@ -1,7 +1,7 @@
 NODE = node
 NODE_OPTS = --use-strict
 MOCHA = ./node_modules/.bin/_mocha
-TEST = test/**/*_test.js*
+TEST = $$(find test -name "*_test.js" -o -name "*_test.jsx")
 
 love:
 	@echo "Feel like makin' love."

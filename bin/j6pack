@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var Fs = require("fs")
 var concatStream = require("concat-stream")
-var compile = require("../compile")
+var compile = require("../compiler")
 
 var stream
 var path = process.argv[2]
