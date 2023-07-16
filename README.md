@@ -3,7 +3,7 @@ J6Pack.js
 [![NPM version][npm-badge]](https://www.npmjs.com/package/j6pack)
 [![Build status][travis-badge]](https://travis-ci.org/moll/js-j6pack)
 
-J6Pack.js is a JavaScript library that transpiles **JSX to JavaScript** _and_ can separately render **JSX to HTML**. It's also usable from Node.js to **render JSX on the server side** and can hook into **[Express.js][express] view rendering**. J6Pack **does not depend on React nor implements a virtual DOM**. The HTML it renders is just text, though with interpolated values securely escaped.
+J6Pack.js is a JavaScript library that transpiles **JSX to JavaScript** _and_ can separately render **JSX to HTML**. It comes with a [Browserify][browserify] transform out of the box. It's also usable from Node.js to **render JSX on the server side** and can hook into **[Express.js][express] view rendering**. J6Pack **does not depend on React nor implements a virtual DOM**. The HTML it renders is just text, though with interpolated values securely escaped.
 
 To use JSX on the backend with Node.js, you don't need an external build tool. Just let J6Pack.js handle the JSX translation transparently as you `require` or import modules.
 
@@ -15,6 +15,7 @@ For pedantics, the JavaScript it renders preserves all the whitespace and newlin
 [travis-badge]: https://travis-ci.org/moll/js-j6pack.svg?branch=master
 [express]: https://expressjs.com
 [acorn]: https://www.npmjs.com/package/acorn
+[browserify]: https://browserify.org
 
 
 Installing
@@ -228,6 +229,23 @@ Http.createServer(handleRequest).listen(process.env.PORT || 3000)
 ```
 
 The same example code is in `examples/server.jsx` which you can run via `make examples/server.jsx` and view on <http://localhost:3000> by default.
+
+### Browserify
+To have [Browserify][browserify] use J6Pack.js for precompiling JSX files to JavaScript, pass `j6pack/browserify` as a transform when invoking Browserify:
+
+```sh
+browserify --extension=jsx --transform j6pack/browserify
+```
+
+Or add a `browserify` property to `package.json`:
+
+```json
+{
+	"browserify": {
+		"transform": ["j6pack/browserify"]
+	}
+}
+```
 
 ### Express.js
 J6Pack.js comes with explicit support for the [Express.js][express] web framework [templates](https://expressjs.com/en/guide/using-template-engines.html). To add `.jsx` template support to Express.js, set it as an engine:
