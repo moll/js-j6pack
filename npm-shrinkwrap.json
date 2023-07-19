@@ -17,60 +17,6 @@
       "from": "acorn-walk@latest",
       "resolved": "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.2.0.tgz"
     },
-    "concat-stream": {
-      "version": "1.6.0",
-      "from": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
-      "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
-      "dependencies": {
-        "inherits": {
-          "version": "2.0.3",
-          "from": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
-          "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
-        },
-        "typedarray": {
-          "version": "0.0.6",
-          "from": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz",
-          "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
-        },
-        "readable-stream": {
-          "version": "2.2.2",
-          "from": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.2.tgz",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.2.tgz",
-          "dependencies": {
-            "buffer-shims": {
-              "version": "1.0.0",
-              "from": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz",
-              "resolved": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz"
-            },
-            "core-util-is": {
-              "version": "1.0.2",
-              "from": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
-              "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
-            },
-            "isarray": {
-              "version": "1.0.0",
-              "from": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz",
-              "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
-            },
-            "process-nextick-args": {
-              "version": "1.0.7",
-              "from": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz",
-              "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz"
-            },
-            "string_decoder": {
-              "version": "0.10.31",
-              "from": "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz",
-              "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz"
-            },
-            "util-deprecate": {
-              "version": "1.0.2",
-              "from": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
-              "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
-            }
-          }
-        }
-      }
-    },
     "mocha": {
       "version": "2.5.3",
       "from": "https://registry.npmjs.org/mocha/-/mocha-2.5.3.tgz",

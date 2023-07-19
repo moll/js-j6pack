@@ -30,8 +30,7 @@
 	"dependencies": {
 		"acorn": "^8",
 		"acorn-jsx": "^5",
-		"acorn-walk": "^8",
-		"concat-stream": "^1.4.0"
+		"acorn-walk": "^8"
 	},
 
 	"devDependencies": {
