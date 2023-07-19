@@ -17,11 +17,7 @@
 		"url": "git://github.com/moll/js-j6pack.git"
 	},
 
-	"licenses": [{
-		"type": "LAGPL",
-		"url": "https://github.com/moll/js-j6pack/blob/master/LICENSE"
-	}],
-
+	"license": "AGPL-3.0-or-later WITH GPL-3.0-linking-exception",
 	"main": "html.js",
 	"bin": {"j6pack": "./bin/j6pack"},
 	"scripts": {"test": "make test"},
