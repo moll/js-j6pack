@@ -193,6 +193,11 @@
           "from": "https://registry.npmjs.org/egal/-/egal-1.3.0.tgz",
           "resolved": "https://registry.npmjs.org/egal/-/egal-1.3.0.tgz"
         },
+        "oolong": {
+          "version": "1.15.1",
+          "from": "oolong@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/oolong/-/oolong-1.15.1.tgz"
+        },
         "lodash.wrap": {
           "version": "3.0.1",
           "from": "https://registry.npmjs.org/lodash.wrap/-/lodash.wrap-3.0.1.tgz",
@@ -218,11 +223,6 @@
           "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz"
         }
       }
-    },
-    "oolong": {
-      "version": "1.15.1",
-      "from": "oolong@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/oolong/-/oolong-1.15.1.tgz"
     }
   }
 }
