@@ -56,6 +56,10 @@ describe("Compile", function() {
 		compile(`return foo()`).must.equal(`return foo()`)
 	})
 
+	it("must compile super outside method", function() {
+		compile(`super.foo()`).must.equal(`super.foo()`)
+	})
+
 	it("must compile function calls on one line", function() {
 		compile(`foo(); bar()`).must.equal(`foo(); bar()`)
 	})

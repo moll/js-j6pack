@@ -21,6 +21,7 @@ function parse(jsx, opts) {
 		sourceType: sourceType,
 		allowAwaitOutsideFunction: true,
 		allowReturnOutsideFunction: true,
+		allowSuperOutsideMethod: true,
 		allowHashBang: true,
 		preserveParens: false,
 		locations: false,
