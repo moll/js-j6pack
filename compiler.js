@@ -13,8 +13,12 @@ function parseAndCompile(jsx, opts) {
 function parse(jsx, opts) {
 	var factory = null
 
+	var ecmaVersion = opts && opts.ecmaVersion || "latest"
+	var sourceType = ecmaVersion == "3" || ecmaVersion == "5" ? "script" : "module"
+
 	var ast = parser.parse(jsx, assign({
-		ecmaVersion: "latest",
+		ecmaVersion: ecmaVersion,
+		sourceType: sourceType,
 		allowAwaitOutsideFunction: true,
 		allowReturnOutsideFunction: true,
 		allowHashBang: true,

@@ -2,6 +2,30 @@ var compile = require("../compiler")
 var outdent = require("./outdent")
 
 describe("Compile", function() {
+	it("must compile export declaration", function() {
+		compile(outdent`
+			export default {name: "John"}
+			export function foo() {}
+			export * from "bar"
+		`).must.equal(outdent`
+			export default {name: "John"}
+			export function foo() {}
+			export * from "bar"
+		`)
+	})
+
+	it("must compile import declaration", function() {
+		compile(outdent`
+			import Foo from "foos"
+			import * as Wild from "wilderness"
+			import {names as NAMES} from "names"
+		`).must.equal(outdent`
+			import Foo from "foos"
+			import * as Wild from "wilderness"
+			import {names as NAMES} from "names"
+		`)
+	})
+
 	it("must compile regular vars, lets and consts", function() {
 		compile(outdent`
 			var age = 42
@@ -82,8 +106,7 @@ describe("Compile", function() {
 			`)
 		})
 
-		it("must not use the factory function given newlined pragma",
-			function() {
+		it("must not use the factory function given newlined pragma", function() {
 			compile(outdent`
 				/**
 					@jsx Jaysex
