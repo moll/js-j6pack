@@ -16,12 +16,17 @@ function parse(jsx, opts) {
 	var ecmaVersion = opts && opts.ecmaVersion || "latest"
 	var sourceType = ecmaVersion == "3" || ecmaVersion == "5" ? "script" : "module"
 
+	// It's not the job of a JSX parser-compiler to validate code, hence all
+	// Acorn checks like super-outside-method and private field checking is
+	// disabled. This also permits running J6pack over code fragments from
+	// a larger program.
 	var ast = parser.parse(jsx, assign({
 		ecmaVersion: ecmaVersion,
 		sourceType: sourceType,
 		allowAwaitOutsideFunction: true,
 		allowReturnOutsideFunction: true,
 		allowSuperOutsideMethod: true,
+		checkPrivateFields: false,
 		allowHashBang: true,
 		preserveParens: false,
 		locations: false,

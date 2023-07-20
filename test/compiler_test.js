@@ -1,5 +1,6 @@
 var compile = require("../compiler")
 var outdent = require("./outdent")
+var ACORN_VERSION = require("acorn").version
 
 describe("Compile", function() {
 	it("must compile export declaration", function() {
@@ -26,6 +27,14 @@ describe("Compile", function() {
 		`)
 	})
 
+	it("must compile import.meta expression", function() {
+		compile(outdent`
+			console.log(import.meta.url)
+		`).must.equal(outdent`
+			console.log(import.meta.url)
+		`)
+	})
+
 	it("must compile regular vars, lets and consts", function() {
 		compile(outdent`
 			var age = 42
@@ -45,6 +54,54 @@ describe("Compile", function() {
 		`).must.equal(outdent`
 			#!/usr/bin/env node
 			foo()
+		`)
+	})
+
+	it("must compile private fields", function() {
+		compile(outdent`
+			class JavaScriptUsedToBeMinimallyGood {
+				#learnToSayNo
+
+				constructor() {
+					this.#learnToSayNo = false
+				}
+			}
+		`).must.equal(outdent`
+			class JavaScriptUsedToBeMinimallyGood {
+				#learnToSayNo
+
+				constructor() {
+					this.#learnToSayNo = false
+				}
+			}
+		`)
+	})
+
+	;(isVersionGte(ACORN_VERSION, "8.10.0") ? it : xit)("must compile undeclared private fields", function() {
+		compile(outdent`
+			class JavaScriptUsedToBeMinimallyGood {
+				constructor() {
+					this.#learnToSayNo = false
+				}
+			}
+		`).must.equal(outdent`
+			class JavaScriptUsedToBeMinimallyGood {
+				constructor() {
+					this.#learnToSayNo = false
+				}
+			}
+		`)
+	})
+
+	;(isVersionGte(ACORN_VERSION, "8.10.0") ? it : xit)("must compile private fields outside of class", function() {
+		compile(outdent`
+			function javaScriptCommittee() {
+				this.#canSayNo = false
+			}
+		`).must.equal(outdent`
+			function javaScriptCommittee() {
+				this.#canSayNo = false
+			}
 		`)
 	})
 
@@ -125,3 +182,14 @@ describe("Compile", function() {
 		})
 	})
 })
+
+function isVersionGte(version, than) {
+	version = version.split(".")
+	than = than.split(".")
+
+	return (
+		(version[0] || 0) >= (than[0] || 0) &&
+		(version[1] || 0) >= (than[1] || 0) &&
+		(version[2] || 0) >= (than[2] || 0)
+	)
+}
