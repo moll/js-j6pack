@@ -41,7 +41,7 @@ function renderScriptChild(children, child) {
 			// to Html instances by the Jsx function) to permit using Jsx.html for
 			// manually escaping </script>. The default <\script> escape may not be
 			// desirable for all embedded languages in <script> tags.
-			if (child instanceof Html) children.push(String(child))
+			if (child instanceof Markup) children.push(String(child))
 			else children.push(escapeScript(String(child)))
 			break
 

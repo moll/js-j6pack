@@ -2,6 +2,7 @@
 var Jsx = require("../html")
 var Fragment = Jsx.Fragment
 var Html = Jsx.Html
+var Xml = require("../xml").Xml
 var outdent = require("./outdent")
 
 // https://www.w3.org/TR/html5/syntax.html#void-elements
@@ -177,6 +178,16 @@ describe("HTML JSX", function() {
 			it("must not escape Html", function() {
 				var html = <script>
 					Hello, {new Html("<script>alert(1&2)</script>")}!
+				</script>
+
+				html.must.eql(new Html(outdent`
+					<script>Hello, <script>alert(1&2)</script>!</script>
+				`))
+			})
+
+			it("must not escape Xml", function() {
+				var html = <script>
+					Hello, {new Xml("<script>alert(1&2)</script>")}!
 				</script>
 
 				html.must.eql(new Html(outdent`
