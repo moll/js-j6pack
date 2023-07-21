@@ -278,6 +278,53 @@ describe("Compile", function() {
 			`)
 		})
 	})
+
+	describe("given @jsxFrag pragma", function() {
+		it("must use the given fragment factory function", function() {
+			compile(outdent`
+				/** @jsxFrag Jaysex.Fragment */
+				<><br /></>
+			`).must.equal(outdent`
+				/** @jsxFrag Jaysex.Fragment */
+				Jaysex.Fragment(null, [Jsx("br")])
+			`)
+		})
+
+		it("must use the factory function given no leading or trailing spaces",
+			function() {
+			compile(outdent`
+				/**@jsxFrag Jaysex.Fragment*/
+				<><br /></>
+			`).must.equal(outdent`
+				/**@jsxFrag Jaysex.Fragment*/
+				Jaysex.Fragment(null, [Jsx("br")])
+			`)
+		})
+
+		it("must use the factory function given tabs", function() {
+			compile(outdent`
+				/**\t@jsxFrag Jaysex.Fragment\t*/
+				<><br /></>
+			`).must.equal(outdent`
+				/**\t@jsxFrag Jaysex.Fragment\t*/
+				Jaysex.Fragment(null, [Jsx("br")])
+			`)
+		})
+
+		it("must not use the factory function given newlined pragma", function() {
+			compile(outdent`
+				/**
+					@jsxFrag Jaysex.Fragment
+				*/
+				<><br /></>
+			`).must.equal(outdent`
+				/**
+					@jsxFrag Jaysex.Fragment
+				*/
+				[Jsx("br")]
+			`)
+		})
+	})
 })
 
 function isVersionGte(version, than) {

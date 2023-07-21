@@ -16,7 +16,7 @@ function parseAndCompile(jsx, opts) {
 }
 
 function parse(jsx, opts) {
-	var factory
+	var factory, fragmentFactory
 	var ecmaVersion = opts && opts.ecmaVersion || "latest"
 
 	// It's not the job of a JSX parser-compiler to validate code, hence all
@@ -32,10 +32,20 @@ function parse(jsx, opts) {
 		),
 
 		onComment: function(isBlockComment, comment) {
+			var m
 			if (!isBlockComment) return
-			if (factory != null) return
-			var m = /^\*[ \t]*@jsx[ \t]+([^\s]+)[ \t]*/.exec(comment)
-			if (m) factory = m[1]
+
+			if (
+				factory == null &&
+				(m = /^\*[ \t]*@jsx[ \t]+([^\s]+)[ \t]*/.exec(comment))
+			) factory = m[1]
+
+			// Babel seems to support @jsxFrag:
+			// https://babeljs.io/docs/babel-plugin-transform-react-jsx#customizing-with-the-classic-runtime
+			if (
+				fragmentFactory == null &&
+				(m = /^\*[ \t]*@jsxFrag[ \t]+([^\s]+)[ \t]*/.exec(comment))
+			) fragmentFactory = m[1]
 		}
 	}, opts, {
 		allowAwaitOutsideFunction: true,
@@ -43,7 +53,7 @@ function parse(jsx, opts) {
 		allowSuperOutsideMethod: true,
 		checkPrivateFields: false,
 		allowHashBang: true
-	})), {jsx: {factory: factory}})
+	})), {jsx: {factory: factory, fragmentFactory: fragmentFactory}})
 }
 
 function defaults(target) {
