@@ -1094,34 +1094,68 @@ describe("Compiler", function() {
 	})
 
 	describe("given fragment", function() {
-		it("must compile element", function() {
-			compile(outdent`
-				<><br /></>
-			`).must.equal(outdent`
-				[Jsx("br")]
-			`)
+		describe("given no fragment factory name", function() {
+			it("must compile element", function() {
+				compile(outdent`
+					<><br /></>
+				`).must.equal(outdent`
+					[Jsx("br")]
+				`)
+			})
+
+			it("must compile element surrounded by whitespace", function() {
+				compile(outdent`
+					<>${WHITESPACE_SANS_NL}<br />${WHITESPACE_SANS_NL}</>
+				`).must.equal(outdent`
+					[${WHITESPACE_SANS_NL}Jsx("br")${WHITESPACE_SANS_NL}]
+				`)
+			})
+
+			it("must compile two elements on separate lines", function() {
+				compile(outdent`
+					<>
+						<br />
+						<hr />
+					</>
+				`).must.equal(outdent`
+					[
+						Jsx("br"),
+						Jsx("hr")
+					]
+				`)
+			})
 		})
 
-		it("must compile element surrounded by whitespace", function() {
-			compile(outdent`
-				<>${WHITESPACE_SANS_NL}<br />${WHITESPACE_SANS_NL}</>
-			`).must.equal(outdent`
-				[${WHITESPACE_SANS_NL}Jsx("br")${WHITESPACE_SANS_NL}]
-			`)
-		})
+		describe("given a fragment factory name", function() {
+			it("must compile element", function() {
+				compile(outdent`
+					<><br /></>
+				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+					Jsx.Fragment(null, [Jsx("br")])
+				`)
+			})
 
-		it("must compile two elements on separate lines", function() {
-			compile(outdent`
-				<>
-					<br />
-					<hr />
-				</>
-			`).must.equal(outdent`
-				[
-					Jsx("br"),
-					Jsx("hr")
-				]
-			`)
+			it("must compile element surrounded by whitespace", function() {
+				compile(outdent`
+					<>${WHITESPACE_SANS_NL}<br />${WHITESPACE_SANS_NL}</>
+				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+					Jsx.Fragment(null, [${WHITESPACE_SANS_NL}Jsx("br")${WHITESPACE_SANS_NL}])
+				`)
+			})
+
+			it("must compile two elements on separate lines", function() {
+				compile(outdent`
+					<>
+						<br />
+						<hr />
+					</>
+				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+					Jsx.Fragment(null, [
+						Jsx("br"),
+						Jsx("hr")
+					])
+				`)
+			})
 		})
 	})
 })
