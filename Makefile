@@ -30,13 +30,8 @@ publish:
 tag:
 	git tag "v$$($(NODE) -e 'console.log(require("./package").version)')"
 
-clean:
-	-$(RM) *.tgz
-	npm prune --production
-
 .PHONY: love
 .PHONY: test spec autotest autospec
 .PHONY: pack publish tag
-.PHONY: clean
 .PHONY: .FORCE
 .PRECIOUS: examples/%.jsx
