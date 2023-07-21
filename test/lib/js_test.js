@@ -1024,11 +1024,7 @@ describe("Compiler", function() {
 	})
 
 	describe("given component", function() {
-		describe("when not passing components to factory", function() {
-			function compile(jsx) {
-				return Js.compile({passUnknownTagsToFactory: !!0}, parse(jsx).ast, jsx)
-			}
-
+		describe("given no component factory name", function() {
 			it("must compile self-closing component", function() {
 				compile(`<Person />`).must.equal(`Person()`)
 			})
@@ -1066,28 +1062,30 @@ describe("Compiler", function() {
 			})
 		})
 
-		describe("when passing components to factory", function() {
+		describe("when component factory name", function() {
 			function compile(jsx) {
-				return Js.compile({passUnknownTagsToFactory: true}, parse(jsx).ast, jsx)
+				return Js.compile({
+					componentFactory: "Jsx.Component"
+				}, parse(jsx).ast, jsx)
 			}
 
 			it("must compile self-closing component", function() {
-				compile(`<Person />`).must.equal(`Jsx(Person)`)
+				compile(`<Person />`).must.equal(`Jsx.Component(Person)`)
 			})
 
 			it("must compile empty component", function() {
-				compile(`<Person></Person>`).must.equal(`Jsx(Person)`)
+				compile(`<Person></Person>`).must.equal(`Jsx.Component(Person)`)
 			})
 
 			it("must compile self-closing property accessed component", function() {
-				compile(`<People.Person />`).must.equal(`Jsx(People.Person)`)
+				compile(`<People.Person />`).must.equal(`Jsx.Component(People.Person)`)
 			})
 
 			it("must compile component with one line text", function() {
 				compile(outdent`
 					<Person>John</Person>
 				`).must.equal(outdent`
-					Jsx(Person, null, ["John"])
+					Jsx.Component(Person, null, ["John"])
 				`)
 			})
 		})
