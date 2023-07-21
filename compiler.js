@@ -1,6 +1,7 @@
 var Acorn = require("acorn")
 var parser = Acorn.Parser.extend(require("acorn-jsx")())
 var compile = require("./lib/js").compile
+var assign = require("./lib").assign
 exports = module.exports = parseAndCompile
 exports.compile = compile
 exports.parse = parse
@@ -45,15 +46,6 @@ function parse(jsx, opts) {
 	}))
 
 	return {ast: ast, factory: factory}
-}
-
-function assign(target) {
-  if (target != null) for (var i = 1; i < arguments.length; ++i) {
-    var source = arguments[i]
-    for (var key in source) target[key] = source[key]
-  }
-
-  return target
 }
 
 function defaults(target) {

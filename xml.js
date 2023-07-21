@@ -8,6 +8,7 @@ exports = module.exports = Jsx.bind(null, render)
 exports.Fragment = Jsx.Fragment
 exports.Xml = Xml
 exports.xml = newXml
+exports.assign = require("./lib").assign
 
 function render(tagName, attrs, children) {
 	var tag = "<" + tagName

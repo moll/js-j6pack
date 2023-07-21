@@ -2,7 +2,7 @@ var Jsx = require("./lib/markup")
 var Markup = Jsx.Markup
 var renderChild = Jsx.renderChild
 var renderAttrs = Jsx.renderAttributes
-var typeOf = Jsx.typeOf
+var typeOf = require("./lib").typeOf
 var VOID_ELEMENTS = require("./lib/void_elements")
 var VOID_ERR = "Children given to self-closing element: "
 var EMPTY_ARR = Array.prototype
@@ -11,6 +11,7 @@ exports = module.exports = Jsx.bind(null, render)
 exports.Fragment = Jsx.Fragment
 exports.Html = Html
 exports.html = newHtml
+exports.assign = require("./lib").assign
 
 function render(tagName, attrs, children) {
 	var tag = "<" + tagName
