@@ -6,30 +6,29 @@ exports.compile = compile
 exports.parse = parse
 
 function parseAndCompile(jsx, opts) {
-	var parsed = parse(jsx)
+	var parsed = parse(jsx, opts && {
+		ecmaVersion: opts.ecmaVersion,
+		sourceType: opts.sourceType
+	})
+
 	return compile(assign({factory: parsed.factory}, opts), parsed.ast, jsx)
 }
 
 function parse(jsx, opts) {
-	var factory = null
-
+	var factory
 	var ecmaVersion = opts && opts.ecmaVersion || "latest"
-	var sourceType = ecmaVersion == "3" || ecmaVersion == "5" ? "script" : "module"
 
 	// It's not the job of a JSX parser-compiler to validate code, hence all
 	// Acorn checks like super-outside-method and private field checking is
 	// disabled. This also permits running J6pack over code fragments from
 	// a larger program.
-	var ast = parser.parse(jsx, assign({
+	var ast = parser.parse(jsx, defaults({
 		ecmaVersion: ecmaVersion,
-		sourceType: sourceType,
-		allowAwaitOutsideFunction: true,
-		allowReturnOutsideFunction: true,
-		allowSuperOutsideMethod: true,
-		checkPrivateFields: false,
-		allowHashBang: true,
-		preserveParens: false,
-		locations: false,
+
+		sourceType: (
+			opts && opts.sourceType ||
+			(ecmaVersion == "3" || ecmaVersion == "5" ? "script" : "module")
+		),
 
 		onComment: function(isBlockComment, comment) {
 			if (!isBlockComment) return
@@ -37,7 +36,13 @@ function parse(jsx, opts) {
 			var m = /^\*[ \t]*@jsx[ \t]+([^\s]+)[ \t]*/.exec(comment)
 			if (m) factory = m[1]
 		}
-	}, opts))
+	}, opts, {
+		allowAwaitOutsideFunction: true,
+		allowReturnOutsideFunction: true,
+		allowSuperOutsideMethod: true,
+		checkPrivateFields: false,
+		allowHashBang: true
+	}))
 
 	return {ast: ast, factory: factory}
 }
@@ -46,6 +51,15 @@ function assign(target) {
   if (target != null) for (var i = 1; i < arguments.length; ++i) {
     var source = arguments[i]
     for (var key in source) target[key] = source[key]
+  }
+
+  return target
+}
+
+function defaults(target) {
+  if (target != null) for (var i = 1; i < arguments.length; ++i) {
+    var source = arguments[i]
+    for (var key in source) if (!(key in target)) target[key] = source[key]
   }
 
   return target

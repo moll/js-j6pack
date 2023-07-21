@@ -135,6 +135,103 @@ describe("Compile", function() {
 		})
 	})
 
+	describe("given ECMA version option", function() {
+		;[
+			"3",
+			"5",
+			"6",
+			"7",
+			"8",
+			"9",
+			"10",
+			"11",
+			"12",
+			"13",
+			"14",
+			"latest"
+		].forEach(function(ver) {
+			it("must compile given ECMAScript " + ver, function() {
+				compile(outdent`
+					function foo() {}
+				`, {ecmaVersion: ver}).must.equal(outdent`
+					function foo() {}
+				`)
+			})
+		})
+
+		it("must err given import or export with ECMAScript 3", function() {
+			var err
+			try {
+				compile(outdent`
+					export default {name: "John"}
+					import * as Module from "module"
+				`, {ecmaVersion: "3"})
+			}
+			catch (ex) { err = ex }
+			err.must.be.an.error(SyntaxError, /Unexpected token/)
+		})
+
+		it("must err given import or export with ECMAScript 5", function() {
+			var err
+			try {
+				compile(outdent`
+					export default {name: "John"}
+					import * as Module from "module"
+				`, {ecmaVersion: "5"})
+			}
+			catch (ex) { err = ex }
+			err.must.be.an.error(SyntaxError, /keyword.*reserved/)
+		})
+
+		;[
+			"6",
+			"7",
+			"8",
+			"9",
+			"10",
+			"11",
+			"12",
+			"13",
+			"14",
+			"latest"
+		].forEach(function(ver) {
+			it("must not err given import or export with ECMAScript " + ver,
+				function() {
+				compile(outdent`
+					export default {name: "John"}
+					import * as Module from "module"
+				`, {ecmaVersion: ver}).must.equal(outdent`
+					export default {name: "John"}
+					import * as Module from "module"
+				`)
+			})
+		})
+	})
+
+	describe("given source type option", function() {
+		it("must err given import or export with source type script", function() {
+			var err
+			try {
+				compile(outdent`
+					export default {name: "John"}
+					import * as Module from "module"
+				`, {ecmaVersion: "6", sourceType: "script"})
+			}
+			catch (ex) { err = ex }
+			err.must.be.an.error(SyntaxError, /sourceType: module/)
+		})
+
+		it("must permit import or export with source type module", function() {
+			compile(outdent`
+				export default {name: "John"}
+				import * as Module from "module"
+			`, {ecmaVersion: "5", sourceType: "module"}).must.equal(outdent`
+				export default {name: "John"}
+				import * as Module from "module"
+			`)
+		})
+	})
+
 	describe("given @jsx pragma", function() {
 		it("must use the given factory function", function() {
 			compile(outdent`
