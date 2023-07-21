@@ -7,12 +7,12 @@ exports.compile = compile
 exports.parse = parse
 
 function parseAndCompile(jsx, opts) {
-	var parsed = parse(jsx, opts && {
+	var ast = parse(jsx, opts && {
 		ecmaVersion: opts.ecmaVersion,
 		sourceType: opts.sourceType
 	})
 
-	return compile(assign({factory: parsed.factory}, opts), parsed.ast, jsx)
+	return compile(assign(ast.jsx, opts), ast, jsx)
 }
 
 function parse(jsx, opts) {
@@ -23,7 +23,7 @@ function parse(jsx, opts) {
 	// Acorn checks like super-outside-method and private field checking is
 	// disabled. This also permits running J6pack over code fragments from
 	// a larger program.
-	var ast = parser.parse(jsx, defaults({
+	return assign(parser.parse(jsx, defaults({
 		ecmaVersion: ecmaVersion,
 
 		sourceType: (
@@ -43,9 +43,7 @@ function parse(jsx, opts) {
 		allowSuperOutsideMethod: true,
 		checkPrivateFields: false,
 		allowHashBang: true
-	}))
-
-	return {ast: ast, factory: factory}
+	})), {jsx: {factory: factory}})
 }
 
 function defaults(target) {

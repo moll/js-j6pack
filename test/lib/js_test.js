@@ -1064,9 +1064,7 @@ describe("Compiler", function() {
 
 		describe("when component factory name", function() {
 			function compile(jsx) {
-				return Js.compile({
-					componentFactory: "Jsx.Component"
-				}, parse(jsx).ast, jsx)
+				return Js.compile({componentFactory: "Jsx.Component"}, parse(jsx), jsx)
 			}
 
 			it("must compile self-closing component", function() {
@@ -1126,9 +1124,7 @@ describe("Compiler", function() {
 
 		describe("given a fragment factory name", function() {
 			function compile(jsx) {
-				return Js.compile({
-					fragmentFactory: "Jsx.Fragment"
-				}, parse(jsx).ast, jsx)
+				return Js.compile({fragmentFactory: "Jsx.Fragment"}, parse(jsx), jsx)
 			}
 
 			it("must compile element", function() {
@@ -1164,4 +1160,4 @@ describe("Compiler", function() {
 	})
 })
 
-function compile(jsx, opts) { return Js.compile(opts, parse(jsx).ast, jsx) }
+function compile(jsx, opts) { return Js.compile(opts, parse(jsx), jsx) }
