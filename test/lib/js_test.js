@@ -3,7 +3,7 @@ var parse = require("../../compiler").parse
 var outdent = require("../outdent")
 var WHITESPACE_SANS_NL = "\t\v \f"
 
-describe("Compiler", function() {
+describe("Js", function() {
 	it("must compile function calls on one line", function() {
 		compile(outdent`
 			foo(); bar()
@@ -93,6 +93,18 @@ describe("Compiler", function() {
 			`).must.equal(outdent`
 				Jsx("input", {
 					value: "John Doe"
+				})
+			`)
+		})
+
+		it("must compile self-closing element with attribute on separate line with CRs", function() {
+			compile(outdent`
+				<input\r
+					value="John Doe"\r
+				/>
+			`).must.equal(outdent`
+				Jsx("input", {\r
+					value: "John Doe"\r
 				})
 			`)
 		})
@@ -302,6 +314,18 @@ describe("Compiler", function() {
 			`)
 		})
 
+		it("must compile self-closing element with a single spread attribute on separate line with CRs", function() {
+			compile(outdent`
+				<input\r
+					{...attrs}\r
+				/>
+			`).must.equal(outdent`
+				Jsx("input",\r
+					attrs\r
+				)
+			`)
+		})
+
 		it("must compile self-closing element with a two spread attributes", function() {
 			compile(outdent`
 				<input {...defaults} {...attrs} />
@@ -362,6 +386,20 @@ describe("Compiler", function() {
 			`)
 		})
 
+		it("must compile self-closing element with a single attribute and spread attribute after on separate lines with CRs", function() {
+			compile(outdent`
+				<input\r
+					name="sex"\r
+					{...attrs}\r
+				/>
+			`).must.equal(outdent`
+				Jsx("input", Object.assign({\r
+					name: "sex"\r
+					}, attrs\r
+				))
+			`)
+		})
+
 		it("must compile self-closing element with a spread attribute surrounded by named attributes", function() {
 			compile(outdent`
 				<input name="age" {...attrs} value="42" />
@@ -382,6 +420,22 @@ describe("Compiler", function() {
 					name: "age"
 					}, attrs, {
 					value: "42"
+				}))
+			`)
+		})
+
+		it("must compile self-closing element with a spread attribute surrounded by named attributes on separate lines with CRs", function() {
+			compile(outdent`
+				<input\r
+					name="age"\r
+					{...attrs}\r
+					value="42"\r
+				/>
+			`).must.equal(outdent`
+				Jsx("input", Object.assign({\r
+					name: "age"\r
+					}, attrs, {\r
+					value: "42"\r
 				}))
 			`)
 		})
@@ -488,6 +542,19 @@ describe("Compiler", function() {
 			compile(outdent`
 				<h1>
 					Hello, John
+				</h1>
+			`).must.equal(outdent`
+				Jsx("h1", null, [
+					"Hello, John"
+				])
+			`)
+		})
+
+		// Acorn seems to normalize \r\n-s into \n-s in JSXText.
+		it("must compile element with text on separate line with CRs", function() {
+			compile(outdent`
+				<h1>\r
+					Hello, John\r
 				</h1>
 			`).must.equal(outdent`
 				Jsx("h1", null, [
