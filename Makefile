@@ -21,9 +21,6 @@ autospec:
 examples/%.jsx: .FORCE
 	@$(NODE) --require ./register "$@"
 
-shrinkwrap:
-	npm shrinkwrap --dev
-
 pack:
 	@file=$$(npm pack); echo "$$file"; tar tf "$$file"
 
@@ -39,7 +36,6 @@ clean:
 
 .PHONY: love
 .PHONY: test spec autotest autospec
-.PHONY: shrinkwrap
 .PHONY: pack publish tag
 .PHONY: clean
 .PHONY: .FORCE
