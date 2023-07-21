@@ -1127,10 +1127,16 @@ describe("Compiler", function() {
 		})
 
 		describe("given a fragment factory name", function() {
+			function compile(jsx) {
+				return Js.compile({
+					fragmentFactory: "Jsx.Fragment"
+				}, parse(jsx).ast, jsx)
+			}
+
 			it("must compile element", function() {
 				compile(outdent`
 					<><br /></>
-				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+				`).must.equal(outdent`
 					Jsx.Fragment(null, [Jsx("br")])
 				`)
 			})
@@ -1138,7 +1144,7 @@ describe("Compiler", function() {
 			it("must compile element surrounded by whitespace", function() {
 				compile(outdent`
 					<>${WHITESPACE_SANS_NL}<br />${WHITESPACE_SANS_NL}</>
-				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+				`).must.equal(outdent`
 					Jsx.Fragment(null, [${WHITESPACE_SANS_NL}Jsx("br")${WHITESPACE_SANS_NL}])
 				`)
 			})
@@ -1149,7 +1155,7 @@ describe("Compiler", function() {
 						<br />
 						<hr />
 					</>
-				`, {fragmentFactory: "Jsx.Fragment"}).must.equal(outdent`
+				`).must.equal(outdent`
 					Jsx.Fragment(null, [
 						Jsx("br"),
 						Jsx("hr")
