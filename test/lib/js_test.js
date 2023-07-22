@@ -326,6 +326,14 @@ describe("Js", function() {
 			`)
 		})
 
+		it("must compile self-closing element with a spread attribute containing JSX", function() {
+			compile(outdent`
+				<input {...<br />} />
+			`).must.equal(outdent`
+				Jsx("input", Jsx("br"))
+			`)
+		})
+
 		it("must compile self-closing element with a two spread attributes", function() {
 			compile(outdent`
 				<input {...defaults} {...attrs} />
