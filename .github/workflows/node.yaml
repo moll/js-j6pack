@@ -1,0 +1,33 @@
+name: Tests on Node.js
+"on": [push, pull_request]
+
+jobs:
+  test:
+    name: Node.js v${{matrix.node}}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node:
+          - "4"
+          - "6"
+          - "8"
+          - "10"
+          - "12"
+          - "14"
+          - "16"
+          - "18"
+          - "20"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js v${{matrix.versions.node}}
+        uses: actions/setup-node@v3
+        with: {node-version: "${{matrix.versions.node}}"}
+
+      - name: Install NPMs
+        run: npm install --no-package-lock
+
+      - name: Run tests
+        run: make spec

@@ -1,7 +1,7 @@
 J6Pack.js
 =========
 [![NPM version][npm-badge]](https://www.npmjs.com/package/j6pack)
-[![Build status][travis-badge]](https://travis-ci.org/moll/js-j6pack)
+[![Build status][build-badge]](https://github.com/moll/js-j6pack/actions/workflows/node.yaml)
 
 J6Pack.js is a JavaScript library that transpiles **JSX to JavaScript** _and_ can separately render **JSX to HTML**. It comes with a [Browserify][browserify] transform out of the box. It's also usable from Node.js to **render JSX on the server side** and can hook into **[Express.js][express] view rendering**. J6Pack **does not depend on React nor implements a virtual DOM**. The HTML it renders is just text, though with interpolated values securely escaped.
 
@@ -12,7 +12,7 @@ J6Pack.js defaults to using [Acorn][acorn] for parsing JSX — supporting ECMASc
 For pedantics, the JavaScript it renders preserves all the whitespace and newlines in your JSX source and is therefore very human readable.
 
 [npm-badge]: https://img.shields.io/npm/v/j6pack.svg
-[travis-badge]: https://travis-ci.org/moll/js-j6pack.svg?branch=master
+[build-badge]: https://github.com/moll/js-j6pack/actions/workflows/node.yaml/badge.svg
 [express]: https://expressjs.com
 [acorn]: https://www.npmjs.com/package/acorn
 [browserify]: https://browserify.org
