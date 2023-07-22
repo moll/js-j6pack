@@ -1,3 +1,17 @@
+## Unreleased
+- Switches from using [JsxTransform][jsx-transform] to implementing a custom JSX compiler with the help of [Acorn][acorn], a JavaScript parsing library.
+
+  The result is almost byte-for-byte identical with the exception of a few improvements around closing-brace position. Just like JsxTransform, J6Pack retains all whitespace in the source file, so all reported line numbers match.
+
+  Switching to Acorn also adds support for ECMAScript 14 (2023) and beyond.
+
+- Adds a [Browserify][browserify] transform.
+- Adds a way to set compilation options when using `j6pack/register` via setting the `options` property of its export.
+
+[acorn]: https://www.npmjs.com/package/acorn
+[jsx-transform]: https://www.npmjs.com/package/jsx-transform
+[browserify]: https://browserify.org
+
 ## 1.1.0 (Jan 11, 2021)
 - Escapes ampersands (`&`) in HTML and XML attributes.  
   Previous behavior permitted using HTML entities in attributes, but it's safer to opt-in to that where necessary with `Jsx.html`:
