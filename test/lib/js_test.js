@@ -358,6 +358,14 @@ describe("Js", function() {
 			`)
 		})
 
+		it("must compile self-closing element with a named attribute and a spread attribute using given assign name with leading period", function() {
+			compile(outdent`
+				<input name="age" {...attrs} />
+			`, {assign: ".assign"}).must.equal(outdent`
+				Jsx("input", Jsx.assign({name: "age"}, attrs))
+			`)
+		})
+
 		it("must compile self-closing element with a spread attribute and named attribute", function() {
 			compile(outdent`
 				<input name="age" {...attrs} />
@@ -1137,7 +1145,7 @@ describe("Js", function() {
 			})
 		})
 
-		describe("when component factory name", function() {
+		describe("given component factory name", function() {
 			function compile(jsx) {
 				return Js.compile({componentFactory: "Jsx.Component"}, parse(jsx), jsx)
 			}
@@ -1160,6 +1168,16 @@ describe("Js", function() {
 				`).must.equal(outdent`
 					Jsx.Component(Person, null, ["John"])
 				`)
+			})
+		})
+
+		describe("given component factory name with leading period", function() {
+			function compile(jsx) {
+				return Js.compile({componentFactory: ".Component"}, parse(jsx), jsx)
+			}
+
+			it("must compile self-closing component", function() {
+				compile(`<Person />`).must.equal(`Jsx.Component(Person)`)
 			})
 		})
 	})
@@ -1229,6 +1247,20 @@ describe("Js", function() {
 						Jsx("br"),
 						Jsx("hr")
 					])
+				`)
+			})
+		})
+
+		describe("given a fragment factory name with a leading period", function() {
+			function compile(jsx) {
+				return Js.compile({fragmentFactory: ".Fragment"}, parse(jsx), jsx)
+			}
+
+			it("must compile element", function() {
+				compile(outdent`
+					<><br /></>
+				`).must.equal(outdent`
+					Jsx.Fragment(null, [Jsx("br")])
 				`)
 			})
 		})

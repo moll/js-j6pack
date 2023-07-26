@@ -262,9 +262,9 @@ The compiler has a few options to customize its output.
 Option | Description
 -------|------------
 `factory` | The function called for creating elements.<br>Called with the tag name, attributes object or `null`, and an array of children.<br>Defaults to `Jsx`.
-`fragmentFactory` | The function called for `<>…</>` JSX syntax.<br>Called with `null` and an array of children.<br>Set to `null` if want a plain JavaScript array instead of a function call.<br>Defaults to `null`.
-`componentFactory` | The function called for component element (tags whose name starts with a capitalized letter).<br>Called with the component variable, attributes object or `null`, and an array of children.<br>Set to `null` if you want the component variable called directly with attributes and children.<br>Defaults to `null`.
-`assign` | The function used for merging spread attributes (`<div {...attrs} class="foo" />`).<br>Defaults to `Object.assign`.
+`fragmentFactory` | The function called for `<>…</>` JSX syntax.<br>Called with `null` and an array of children.<br>Set to `null` if want a plain JavaScript array instead of a function call.<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `null`.
+`componentFactory` | The function called for component element (tags whose name starts with a capitalized letter).<br>Called with the component variable, attributes object or `null`, and an array of children.<br>Set to `null` if you want the component variable called directly with attributes and children.<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `null`.
+`assign` | The function used for merging spread attributes (`<div {...attrs} class="foo" />`).<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `Object.assign`.
 `ecmaVersion` | Set or limit the JavaScript version for parsing. Useful for ensuring you don't accidentally use newer JavaScript syntax in your source files.<br>[Acorn][acorn], the parser J6Pack.js uses by default, supports versions from 3–14 and beyond.<br>Defaults to `"latest"`.
 `sourceType` | Set to `script` or `module` to configure support for `import` and `export` declarations.<br>Defaults to `script` if `ecmaVersion` is 3 or 5 and `module` otherwise.
 
@@ -311,7 +311,7 @@ Jsx("input", Object.assign({}, defaults, {name: "email"}, attrs))
 
 If you wish to not depend on `Object.assign`, you can use the `assign` compiler option to replace `Object.assign` with a function name of your own.
 
-Both the HTML (`require("j6pack/html")`) and XML (`require("j6pack/xml")`) renderers have an `assign` export with a helper function that shallow-merges objects. If you can't depend on Object.assign being available (e.g. in old browsers) or you dislike its ignoring of inherited properties, you're welcome to set the `assign` option to `Jsx.assign`.
+Both the HTML (`require("j6pack/html")`) and XML (`require("j6pack/xml")`) renderers have an `assign` export with a helper function that shallow-merges objects. If you can't depend on Object.assign being available (e.g. in old browsers) or you dislike its ignoring of inherited properties, you're welcome to set the `assign` option to `.assign`. A leading period indicates it's a property of the factory function.
 
 ### Executable
 J6Pack.js comes with a simple executable, `j6pack` that you can use to precompile JSX, perhaps for testing or just seeing what JSX compiles down to. After installing J6Pack.js, invoke it with `./node_modules/.bin/j6pack` or from `bin/j6pack` from this repository:
