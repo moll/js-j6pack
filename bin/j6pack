@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var Fs = require("fs")
-var concatStream = require("concat-stream")
-var compile = require("../compile")
+var StreamCompiler = require("../stream_compiler")
 
 var stream
 var path = process.argv[2]
@@ -12,6 +11,4 @@ switch (path) {
 	default: stream = Fs.createReadStream(path)
 }
 
-stream.setEncoding("utf8").pipe(concatStream(function(jsx) {
-	process.stdout.write(compile(jsx))
-}))
+stream.setEncoding("utf8").pipe(new StreamCompiler).pipe(process.stdout)

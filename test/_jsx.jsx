@@ -1,5 +1,4 @@
 /** @jsx Jsx */
-var O = require("oolong")
 var demand = require("must")
 var outdent = require("./outdent")
 
@@ -59,7 +58,7 @@ module.exports = function(Jsx, Markup) {
 
 			// These escapes also match the canonicalization model.
 			// https://www.w3.org/TR/xml-c14n/#ProcessingModel
-			O.each({
+			each({
 				"&": "&amp;",
 				"<": "&lt;",
 				">": "&gt;",
@@ -79,7 +78,7 @@ module.exports = function(Jsx, Markup) {
 				})
 			})
 
-			O.each({
+			each({
 				"double quotes": "John \"Doe\" Smith",
 				"single quotes": "John's Car",
 				"tabs": "John\tSmith",
@@ -185,7 +184,7 @@ module.exports = function(Jsx, Markup) {
 
 			// These escapes also match the canonicalization model.
 			// https://www.w3.org/TR/xml-c14n/#ProcessingModel
-			O.each({
+			each({
 				"&": "&amp;",
 				"<": "&lt;",
 				"\"": "&quot;",
@@ -207,7 +206,7 @@ module.exports = function(Jsx, Markup) {
 				})
 			})
 
-			O.each({
+			each({
 				"single quotes": "John's Car",
 				"greater-than": "John > Car"
 			}, function(value, title) {
@@ -290,4 +289,9 @@ module.exports = function(Jsx, Markup) {
 			})
 		})
 	})
+}
+
+function each(obj, fn, context) {
+  for (var key in obj) fn.call(context, obj[key], key, obj)
+  return obj
 }

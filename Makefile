@@ -1,7 +1,7 @@
 NODE = node
 NODE_OPTS = --use-strict
 MOCHA = ./node_modules/.bin/_mocha
-TEST = test/**/*_test.js*
+TEST = $$(find test -name "*_test.js" -o -name "*_test.jsx")
 
 love:
 	@echo "Feel like makin' love."
@@ -21,9 +21,6 @@ autospec:
 examples/%.jsx: .FORCE
 	@$(NODE) --require ./register "$@"
 
-shrinkwrap:
-	npm shrinkwrap --dev
-
 pack:
 	@file=$$(npm pack); echo "$$file"; tar tf "$$file"
 
@@ -33,14 +30,8 @@ publish:
 tag:
 	git tag "v$$($(NODE) -e 'console.log(require("./package").version)')"
 
-clean:
-	-$(RM) *.tgz
-	npm prune --production
-
 .PHONY: love
 .PHONY: test spec autotest autospec
-.PHONY: shrinkwrap
 .PHONY: pack publish tag
-.PHONY: clean
 .PHONY: .FORCE
 .PRECIOUS: examples/%.jsx

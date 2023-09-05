@@ -1,16 +1,28 @@
 J6Pack.js
 =========
 [![NPM version][npm-badge]](https://www.npmjs.com/package/j6pack)
-[![Build status][travis-badge]](https://travis-ci.org/moll/js-j6pack)
+[![Build status][build-badge]](https://github.com/moll/js-j6pack/actions/workflows/node.yaml)
 
-J6Pack.js is a JavaScript library that renders **JSX to HTML**. It's also usable from Node.js to **render JSX on the server side** and can hook into **[Express.js][express] view rendering**. It's **minimal** and **does not depend on React**.
+J6Pack.js is a JavaScript library that compiles **JSX to JavaScript** _and_ can then render the **JSX to HTML or XML**. You can use it to add JSX support to Node.js without build tools. Its HTML/XML rendering is also compatible with any web framework, though it's got builtin support for **[Express.js][express]**. You can even use it client-side as the HTML/XML rendering is ECMAScript 5 compatible. There's even a [Browserify][browserify] plugin handy for bundling.
 
-J6Pack.js depends on [JsxTransform][jsx-transform] for parsing and compiling JSX to function calls, but you're welcome to use compatible parsers and hook `.jsx` file handling into Node.js yourself.
+J6Pack **does not depend on React nor implements a virtual DOM**. The HTML/XML it renders is just text, though with interpolated values securely escaped.
+
+J6Pack.js defaults to using [Acorn][acorn] for parsing JSX — supporting ECMAScript 14 (2023) and beyond — but you're welcome to use any [ESTree](https://github.com/estree/estree) compatible parser and invoke J6Pack.js's compiler directly.
+
+For pedantics, the JavaScript it renders preserves all the whitespace and newlines in your JSX source and is therefore very human readable.
 
 [npm-badge]: https://img.shields.io/npm/v/j6pack.svg
-[travis-badge]: https://travis-ci.org/moll/js-j6pack.svg?branch=master
+[build-badge]: https://github.com/moll/js-j6pack/actions/workflows/node.yaml/badge.svg
 [express]: https://expressjs.com
-[jsx-transform]: https://www.npmjs.com/package/jsx-transform
+[acorn]: https://www.npmjs.com/package/acorn
+[browserify]: https://browserify.org
+
+### Table of Contents
+1. [Installing](#installing)
+2. [Rendering HTML/XML](#rendering-html-or-xml)
+3. [Compiling JSX to JavaScript](#compiling-jsx-to-javascript)
+4. [Using JSX with Node.js](#using-jsx-with-nodejs)
+5. [Compiling JSX to JavaScript with Browserify](#compiling-jsx-to-javascript-with-browserify)
 
 
 Installing
@@ -19,41 +31,56 @@ Installing
 npm install j6pack
 ```
 
-J6Pack.js follows [semantic versioning](http://semver.org), so feel free to depend on its major version with something like `>= 1.0.0 < 2` (a.k.a `^1.0.0`).
+J6Pack.js follows [semantic versioning](http://semver.org), so feel free to depend on its major version with something like `>= 1 < 2` (a.k.a `^1`).
 
 
-Using
------
-For just generating HTML out of JSX function calls, require J6Pack.js and call it in the style of [`React.createElement`](https://reactjs.org/docs/react-api.html#createelement) or [equivalent JSX-functions](https://reactjs.org/docs/jsx-in-depth.html), with the exception that children need to always be in an array.
+Rendering HTML or XML
+---------------------
+For rendering HTML, import J6Pack.js and call it in the style of [`React.createElement`](https://react.dev/reference/react/createElement) or [equivalent JSX-functions](https://reactjs.org/docs/jsx-in-depth.html), with the additional **requirement that children always be in an array**. Generally that's how a JSX compiler/transpiler would render the function calls.
+
+For example, setting the factory function to `Jsx` via the `@jsx` pragma (most JSX compilers support this), using J6Pack.js would look like:
+
+```javascript
+/** @jsx Jsx */
+var Jsx = require("j6pack")
+
+var html = <p class="greeting">
+  Hello, <em>world</em>!
+</p>
+
+String(html) // => "<p class=\"greeting\">Hello, <em>world</em>!</p>"
+```
+
+The above should get compiled to the following. You're welcome to always call `Jsx` manually, too, if you don't like the JSX syntax:
 
 ```javascript
 var Jsx = require("j6pack")
 
-var html = Jsx("p", null, [
+var html = Jsx("p", {class: "greeting"}, [
   "Hello, ",
   Jsx("em", null, ["world"]),
   "!"
 ])
 
-String(html) // => "<p>Hello, <em>world</em>!</p>"
+String(html) // => "<p class=\"greeting\">Hello, <em>world</em>!</p>"
 ```
 
-The `html` variable itself is an instance of `Jsx.Html` with `valueOf` and `toString` methods that return the HTML for the entire tree. The use of a value object over a string is mostly an implementation requirement of the way JSX compilers work. It does however permit you to differentiate between unescaped strings and escaped HTML via `instanceof` should you need to:
+The `html` variable in both examples is an instance of `Jsx.Html` with `valueOf` and `toString` methods that return the HTML for the entire tree. The use of a value object over a string is mostly an implementation requirement of the way JSX compilers work. It does however permit you to differentiate between unescaped strings and escaped HTML via `instanceof` should you need to:
 
 ```javascript
 Jsx("p", null, ["Hello, world!"]) instanceof Jsx.Html // => true
 <p>Hello, world!</p> instanceof Jsx.Html // => true
 ```
 
-To use the JSX syntax (`<p>Hello, {name}!</p>`) in JavaScript on Node.js, read on. *Note*, however, that for now you need to name the export of J6Pack.js to `Jsx` as the JSX compiler is hard-coded to use that. If you wish it to be customizable, please [let me know][email].
+To use the JSX syntax (`<p>Hello, {name}!</p>`) on Node.js without an external compiler tool, see the section on "[Using JSX with Node.js](#using-jsx-with-nodejs)".
 
 ### XML
-J6Pack.js by default renders HTML5 compatible HTML. If you'd like to use it to render generic XML, for example to render an [Atom feed](https://en.wikipedia.org/wiki/Atom_(Web_standard)), you can require the XML variant:
+J6Pack.js by default renders HTML5-compatible HTML. If you'd like to use it to render generic XML, for example to render an [Atom feed](https://en.wikipedia.org/wiki/Atom_(Web_standard)), you can require the XML variant from `j6pack/xml`:
 
 ```javascript
 var Jsx = require("j6pack/xml")
 
-var atom = <feed xmlns="http://www.w3.org/2005/Atom">
+var xml = <feed xmlns="http://www.w3.org/2005/Atom">
   <id>http://example.com</id>
   <title>My Blog</title>
 
@@ -67,22 +94,268 @@ var atom = <feed xmlns="http://www.w3.org/2005/Atom">
 </feed>
 ```
 
-Note that unfortunately the [JsxTransform][jsx-transform] library J6Pack.js uses for converting JSX to JavaScript doesn't support XML namespace aliases at the moment. Namespace alias are when you set the namespace with `xmlns:atom="http://www.w3.org/2005/Atom"` and use tags in the style of `<atom:feed>`. I will probably eventually rewrite JsxTransform to support that. Alternatively, you could see about using another transformation library (Babel.js, perhaps) and just using J6Pack's rendering functions.
+The HTML and XML serializers render slightly differently:
 
-### Node.js
-To add support for JSX syntax to Node.js, require `j6pack/register` before starting the app:
+- HTML is rendered with explicit closing-elements for empty tags, except for the [void elements in the HTML standard][void-elements] (like `<input>`).  
+  XML has no void elements.
+- HTML forbids children for [void elements][void-elements].
+- HTML escapes `<script` and `<!--` text inside `<script>` elements.  
+  XML escapes neither and doesn't consider `<script>` special.
+
+[void-elements]: https://developer.mozilla.org/en-US/docs/Glossary/Void_element
+
+J6Pack.js and the [Acorn][acorn] parser it defaults to also supports element namespaces, so you're not required to use XML default namespaces:
+
+```javascript
+var xml = <atom:feed xmlns:atom="http://www.w3.org/2005/Atom">
+  <atom:id>http://example.com</atom:id>
+  <atom:title>My Blog</atom:title>
+
+  {articles.map(function(article) {
+    return <atom:entry>
+      <atom:id>{article.url}</atom:id>
+      <atom:title>{article.title}</atom:title>
+      <atom:content type="text">{article.text}</atom:content>
+    </atom:entry>
+  })}
+</atom:feed>
+```
+
+As with HTML above, you can use differentiate between unescaped strings and escaped XML via `instanceof Jsx.Xml`:
+
+```javascript
+Jsx("p", null, ["Hello, world!"]) instanceof Jsx.Xml // => true
+<p>Hello, world!</p> instanceof Jsx.Xml // => true
+```
+
+### DOM Attributes and Properties
+J6Pack.js renders HTML with minimal transformations, so *use HTML attribute names, not DOM properties*. That is, to set the tag's `class` attribute, use `<p class="greeting">Hello, world!</p>` rather than `className` as you would with React. Same goes for elements' `onclick`, `<label>`s' `for`, `<input>`s' `readonly` and so on.
+
+### Interpolating HTML (like `innerHTML`)
+Should you need to interpolate HTML into the output, you can't use the `innerHTML` property (or React's [dangerouslySetInnerHTML](https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html)) as those live only in the DOM world, not in HTML. Instead, use the `Jsx.html` function to inject your HTML into otherwise escaped values:
+
+```javascript
+var Jsx = require("j6pack")
+var html = <p>Hello, {Jsx.html("<em>world</em>")}!</p>
+String(html) // => "<p>Hello, <em>world</em>!</p>"
+```
+
+When you're rendering XML, use `Jsx.xml`:
+
+```javascript
+var Jsx = require("j6pack/xml")
+
+var atom = <feed xmlns="http://www.w3.org/2005/Atom">
+  <id>http://example.com</id>
+  <title>My Blog</title>
+  {Jsx.xml("<entry>…</entry>")}
+</feed>
+```
+
+### Custom Elements (Functional Components)
+Just like React or other virtual DOM implementations, J6Pack.js supports custom elements. Behind the scenes a custom element is really just a function that gets invoked with two arguments — an object of attributes and an array of children. Both can be `null`/`undefined` if they were not given, so beware.
+
+```javascript
+function Page(attrs, children) {
+  return <html>
+    <head><title>{attrs.title}</title></head>
+    <body>{children}</body>
+  </html>
+}
+
+var html = <Page title="Test Page">
+  <p>Hello, world!</p>
+</Page>
+```
+
+If you use another JSX compiler/transpiler than J6Pack.js, configure it to call component functions directly, rather than passing them to the factory function.
+
+### Returning Multiple Elements (Fragments)
+Occasionally you may want a custom element to return multiple elements without wrapping them in yet another element. You can do that in two ways.
+
+Return an array of elements:
+
+```javascript
+var Jsx = require("j6pack")
+
+function Input(attrs) {
+  return [
+    <label>{attrs.label}</label>,
+    <input type={attrs.type} value={attrs.value} />
+  ]
+}
+```
+
+Alternatively, wrap them in an `<>` element, akin to how [`React.Fragment`](https://react.dev/reference/react/Fragment) works:
+
+```javascript
+var Jsx = require("j6pack")
+
+function Input(attrs) {
+  return <>
+    <label>{attrs.label}</label>
+    <input type={attrs.type} value={attrs.value} />
+  </>
+}
+```
+
+Then use it as you would any other custom element:
+
+```javascript
+var html = <div>
+  <Input label="Name" value="John" />
+  <br />
+  <Input label="Age" type="number" value={42} />
+</div>
+```
+
+If you need to configure your external JSX compiler/transpiler for fragments, you can set it to emit fragments either as JavaScript arrays or as invocations of `Jsx.Fragment` like regular components (children in the 2nd argument as an array).
+
+### ESLint
+If you use [ESLint][eslint] with the [ESLint React plugin][eslint-react] to lint your JavaScript and are getting an error about [missing `React` when using JSX](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/react-in-jsx-scope.md), you may have to specify a pragma to inform ESLint of the JSX function used:
+
+```javascript
+/** @jsx Jsx */
+var Jsx = require("j6pack")
+var html = <p>Hello, world!</p>
+```
+
+A sufficiently new version of [ESLint React plugin][eslint-react] seems to also have a `pragma` setting to set the factory function once for the entire project.
+
+[eslint]: https://eslint.org/
+[eslint-react]: https://github.com/yannickcr/eslint-plugin-react
+
+
+Compiling JSX to JavaScript
+---------------------------
+In addition to rendering HTML, J6Pack.js also contains a compiler/transpiler for JSX syntax. This section covers the use of the standalone compiler, so if you're looking to use JSX while writing your app (for Node.js), see the section on "[Using JSX with Node.js](#using-jsx-with-nodejs)".
+
+To compile a string of JavaScript with JSX into plain JavaScript, import the J6Pack.js compiler and invoke it with the source code
+
+```javascript
+var compile = require("j6pack/compiler")
+
+var js = compile(`
+  var Jsx = require("j6pack")
+  var html = <Greeting name="John" />
+
+  function Greeting(attrs) {
+    return <h1 class="greeting">Hello, {attrs.name}!</h1>
+  }
+`)
+```
+
+The `js` variable should then include the compiled/transpiled output as a string:
+
+```js
+var Jsx = require("j6pack")
+var html = Greeting({name: "John"})
+
+function Greetng(attrs) {
+  return Jsx("h1", {class: "greeting"}, ["Hello, ", attrs.name, "!"])
+}
+```
+
+### Compiler Options
+The compiler has a few options to customize its output.
+
+Option | Description
+-------|------------
+`factory` | The function called for creating elements.<br>Called with the tag name, attributes object or `null`, and an array of children.<br>Defaults to `Jsx`.
+`fragmentFactory` | The function called for `<>…</>` JSX syntax.<br>Called with `null` and an array of children.<br>Set to `null` if want a plain JavaScript array instead of a function call.<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `null`.
+`componentFactory` | The function called for component element (tags whose name starts with a capitalized letter).<br>Called with the component variable, attributes object or `null`, and an array of children.<br>Set to `null` if you want the component variable called directly with attributes and children.<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `null`.
+`assign` | The function used for merging spread attributes (`<div {...attrs} class="foo" />`).<br>If it starts with `.`, it's considered to be a property of `factory` and appended to it.<br>Defaults to `Object.assign`.
+`ecmaVersion` | Set or limit the JavaScript version for parsing. Useful for ensuring you don't accidentally use newer JavaScript syntax in your source files.<br>[Acorn][acorn], the parser J6Pack.js uses by default, supports versions from 3–14 and beyond.<br>Defaults to `"latest"`.
+`sourceType` | Set to `script` or `module` to configure support for `import` and `export` declarations.<br>Defaults to `script` if `ecmaVersion` is 3 or 5 and `module` otherwise.
+
+You can pass the compiler options to `compile` as a second argument:
+
+```javascript
+var compile = require("j6pack/compiler")
+
+var js = compile(`
+  var Jaysex = require("j6pack")
+  var html = <Greeting name="John" />
+
+  function Greeting(attrs) {
+    return <h1 class="greeting">Hello, {attrs.name}!</h1>
+  }
+`, {factory: "Jaysex"})
+```
+
+### Renaming the `Jsx` Function
+By default the compiled JavaScript expects the name of the JSX-render (factory) function to be `Jsx`. That's why all the examples here assign `require("j6pack")` to `Jsx`. If you want to use a different function name, you've got two options:
+
+1. Use the `@jsx` pragma to set the factory function:
+
+   ```javascript
+   /** @jsx Jaysex */
+   var Jaysex = require("j6pack")
+   var html = <p>Hello, world!</p>
+   ```
+
+2. Set the compiler option `factory`.
+
+### Renaming `Object.assign` for Spread Attributes
+Spread attributes get compiled down to using `Object.assign`. For example, the following:
+
+```javascript
+<input {...defaults} name="email" {...attrs} />
+```
+
+Gets compiled down to:
+
+```javascript
+Jsx("input", Object.assign({}, defaults, {name: "email"}, attrs))
+```
+
+If you wish to not depend on `Object.assign`, you can use the `assign` compiler option to replace `Object.assign` with a function name of your own.
+
+Both the HTML (`require("j6pack/html")`) and XML (`require("j6pack/xml")`) renderers have an `assign` export with a helper function that shallow-merges objects. If you can't depend on Object.assign being available (e.g. in old browsers) or you dislike its ignoring of inherited properties, you're welcome to set the `assign` option to `.assign`. A leading period indicates it's a property of the factory function.
+
+### Executable
+J6Pack.js comes with a simple executable, `j6pack` that you can use to precompile JSX, perhaps for testing or just seeing what JSX compiles down to. After installing J6Pack.js, invoke it with `./node_modules/.bin/j6pack` or from `bin/j6pack` from this repository:
+
+```sh
+cat views/index_page.jsx | ./node_modules/.bin/j6pack
+./node_modules/.bin/j6pack views/index_page.jsx
+```
+
+### Using a Different JavaScript Parser
+J6Pack.js defaults to using [Acorn][acorn] for parsing JSX — supporting ECMAScript 14 (2023) and beyond — but you're welcome to use any [ESTree](https://github.com/estree/estree) compatible parser that also supports JSX AST nodes.
+
+For example, use of [Esprima][esprima] should be something like:
+
+```js
+var parse = require("esprima").parse
+var compile = require("j6pack/compiler").compile
+
+var js = `
+  var Jsx = require("j6pack")
+  var html = <h1 class="greeting">Hello, John!</h1>
+`
+
+compile({factory: "Jaysex"}, parse(js), js)
+```
+
+[esprima]: https://esprima.org
+
+
+Using JSX with Node.js
+----------------------
+To add transparent support for importing JSX source files to Node.js, require `j6pack/register` before starting the app:
 
 ```sh
 node --require j6pack/register app.js
 ```
 
-Or require it before you load `.jsx` files:
+Or `require` it in your main entry file before you load `.jsx` files:
 
 ```javascript
 require("j6pack/register")
 ```
 
-Then you can render HTML from within your request handlers:
+Then, combined with J6Pack.js's HTML rendering, you can use JSX to respond with HTML from within your request handlers:
 
 ```javascript
 var Jsx = require("j6pack")
@@ -170,95 +443,73 @@ app.get("/", function(_req, res) {
 })
 ```
 
-### DOM Attributes and Properties
-J6Pack.js renders JSX to HTML with minimal transformations, so *use HTML attribute names, not DOM properties*. That is, to set the tag's `class` attribute, use `<p class="greeting">Hello, world!</p>` rather than `className` as you would with React. Same goes for elements' `onclick`, `<label>`s' `for`, `<input>`s' `readonly` and so on.
+### Setting Options
+To set the JSX [compiler options](#compiler-options) (for example, to rename the JSX-render (factory) function), you've got three options:
 
-### Interpolating HTML (like `innerHTML`)
-Should you need to interpolate HTML into JSX, you can't use the `innerHTML` property (or React's [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)) as those live only in the DOM world, not in HTML. Instead, use the `Jsx.html` function to inject your HTML into otherwise escaped values:
+1. Use the `@jsx` pragma in your JSX files to set the factory function:
 
-```javascript
-var Jsx = require("j6pack")
-var html = <p>Hello, {Jsx.html("<em>world</em>")}!</p>
-String(html) // => "<p>Hello, <em>world</em>!</p>"
-```
+   ```javascript
+   /** @jsx Jaysex */
+   var Jaysex = require("j6pack")
+   var html = <p>Hello, world!</p>
+   ```
 
-### Custom Elements (Functional Components)
-Just like React or other virtual DOM implementations, J6Pack.js supports custom elements. Behind the scenes a custom element is really just a function that gets invoked with two arguments — an object of attributes and an array of children. Both can be `null` if they were not given, so beware.
+2. Set the `options` on the export of `j6pack/register` before you `require` any `.jsx` files:
 
-```javascript
-function Page(attrs, children) {
-  return <html>
-    <head><title>{attrs.title}</title></head>
-    <body>{children}</body>
-  </html>
-}
+   ```javascript
+   require("j6pack/register").options = {factory: "Jaysex"}
+   ```
 
-var html = <Page title="Test Page">
-  <p>Hello, world!</p>
-</Page>
-```
+3. Copy the contents of `j6pack/register` to your own project and invoke the `compile` function with options directly:
 
-### Returning Multiple Elements (React Fragments)
-Occasionally you may want a custom element to return multiple elements without wrapping them in yet another element. You can do that in two ways.
+   ```javascript
+   var Fs = require("fs")
+   var compile = require("j6pack/compiler")
 
-Return an array of elements:
+   require.extensions[".jsx"] = function(module, path) {
+     var source = Fs.readFileSync(path, "utf8")
+     module._compile(compile(source, {factory: "Jaysex"}), path)
+   }
+   ```
 
-```javascript
-var Jsx = require("j6pack")
+See above for a [list of all options](#compiler-options).
 
-function Input(attrs) {
-  return [
-    <label>{attrs.label}</label>,
-    <input type={attrs.type} value={attrs.value} />
-  ]
-}
-```
 
-Alternatively, wrap them in a `Jsx.Fragment` element, akin to [`React.Fragment`](https://reactjs.org/docs/fragments.html):
-
-```javascript
-var Jsx = require("j6pack")
-var Fragment = Jsx.Fragment
-
-function Input(attrs) {
-  return <Fragment>
-    <label>{attrs.label}</label>
-    <input type={attrs.type} value={attrs.value} />
-  </Fragment>
-}
-```
-
-Then use it as you would any other custom element:
-
-```javascript
-var html = <div>
-  <Input label="Name" value="John" />
-  <br />
-  <Input label="Age" type="number" value={42} />
-</div>
-```
-
-[JsxTransform][jsx-transform], the library J6Pack.js is using for compiling JSX expressions to function calls, unfortunately doesn't support [React's new `<>` syntax](https://reactjs.org/docs/fragments.html#short-syntax) for fragments. It also doesn't yet support referring to member properties (`Foo.Bar`) in tag names (`<Foo.Bar>`), hence the need to assign `Jsx.Fragment` to the `Fragment` variable above.
-
-### Executable
-J6Pack.js comes with a simple executable, `j6pack` that you can use to precompile JSX, perhaps for testing. After installing J6Pack.js, invoke it with `./node_modules/.bin/j6pack` or from `bin/j6pack` from this repository:
+Compiling JSX to JavaScript with Browserify
+-------------------------------------------
+To have [Browserify][browserify] use J6Pack.js for precompiling JSX files to JavaScript, pass `j6pack/browserify` as a transform when invoking Browserify:
 
 ```sh
-cat views/index_page.jsx | ./node_modules/.bin/j6pack
-./node_modules/.bin/j6pack views/index_page.jsx
+browserify --extension=jsx --transform j6pack/browserify
 ```
 
-### ESLint
-If you use [ESLint][eslint] with the [ESLint React plugin][eslint-react] to lint your JavaScript and are getting an error about [missing `React` when using JSX](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/react-in-jsx-scope.md), you have to specify a pragma to inform it of the JSX function used:
+Or add a `browserify` property to `package.json`:
 
-```javascript
-/** @jsx Jsx */
-var Jsx = require("j6pack")
-var html = <p>Hello, world!</p>
+```json
+{
+	"browserify": {
+		"transform": ["j6pack/browserify"]
+	}
+}
 ```
 
-[eslint]: https://eslint.org/
-[eslint-react]: https://github.com/yannickcr/eslint-plugin-react
+### Setting Options
+To set the JSX [compiler options](#compiler-options), use the Browserify transform option syntax. For example, to limit J6Pack.js's JavaScript parser to ECMAScript 5 (to prevent accidentally using newer JavaScript syntax in your source files):
+
+
+```sh
+browserify --extension=jsx --transform [ j6pack/browserify --ecmaVersion 5 ]
+```
+
+Or via the `browserify` property in `package.json`:
+
+```json
+{
+	"browserify": {
+		"transform": [["j6pack/browserify", {"ecmaVersion": "5"}]]
+	}
+}
+```
 
 
 License
@@ -276,7 +527,7 @@ For more convoluted language, see the `LICENSE` file.
 About
 -----
 **[Andri Möll][moll]** typed this and the code.  
-[Monday Calendar][monday] supported the engineering work.
+[Monday Calendar][monday] and [Billberry][billberry] supported the engineering work.
 
 If you find J6Pack.js needs improving, please don't hesitate to type to me now at [andri@dot.ee][email] or [create an issue online][issues].
 
@@ -284,3 +535,4 @@ If you find J6Pack.js needs improving, please don't hesitate to type to me now a
 [issues]: https://github.com/moll/js-j6pack/issues
 [moll]: https://m811.com
 [monday]: https://mondayapp.com
+[billberry]: https://billberry.ee
