@@ -330,12 +330,12 @@ For example, use of [Esprima][esprima] should be something like:
 var parse = require("esprima").parse
 var compile = require("j6pack/compiler").compile
 
-var ast = parse(`
+var js = `
   var Jsx = require("j6pack")
   var html = <h1 class="greeting">Hello, John!</h1>
-`)
+`
 
-compile(ast)
+compile({factory: "Jaysex"}, parse(js), js)
 ```
 
 [esprima]: https://esprima.org
