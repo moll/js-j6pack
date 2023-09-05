@@ -34,7 +34,7 @@
 	},
 
 	"devDependencies": {
-		"mocha": ">= 2 < 3",
+		"mocha": ">= 2 < 11",
 		"must": ">= 0.13.0 < 0.14"
 	}
 }
