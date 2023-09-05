@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.0 (Sep 5, 2023)
 - Switches from using [JsxTransform][jsx-transform] to implementing a custom JSX compiler with the help of [Acorn][acorn], a JavaScript parsing library.
 
   The result is almost byte-for-byte identical with the exception of a few improvements around closing-brace position. Just like JsxTransform, J6Pack retains all whitespace in the source file, so all reported line numbers match.
